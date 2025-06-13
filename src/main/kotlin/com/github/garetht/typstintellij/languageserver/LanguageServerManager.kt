@@ -2,8 +2,11 @@ package com.github.garetht.typstintellij.languageserver
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.ModalTaskOwner.project
 import com.intellij.platform.lsp.api.LspServerManager
+import com.intellij.platform.lsp.api.LspServerState
 import com.intellij.platform.lsp.api.LspServerSupportProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -11,6 +14,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+
+private val LOG = logger<LanguageServerManager>()
 
 class LanguageServerManager {
   suspend fun initialStart(project: Project, providerClass: Class<out LspServerSupportProvider>) {
@@ -30,8 +35,8 @@ class LanguageServerManager {
         val targetServer =
             servers.find { server -> server.providerClass.canonicalName == cls.canonicalName }
 
-        if (targetServer != null) {
-          // Found our specific server, restart highlighting
+        if (targetServer?.state == LspServerState.Running) {
+          // the server has started up, restart the code analyzer
           restartCodeAnalyzer(project)
           break
         }
@@ -42,11 +47,14 @@ class LanguageServerManager {
   }
 
   private suspend fun restartCodeAnalyzer(project: Project) {
-    withContext(Dispatchers.EDT) { DaemonCodeAnalyzer.getInstance(project).restart() }
+    LOG.warn("Restarting code analyzer")
+    withContext(Dispatchers.EDT) {
+      DaemonCodeAnalyzer.getInstance(project).restart()
+    }
   }
 
   companion object {
-    private val languageServerPollDelay = 200.milliseconds
-    private val languageServerPollTimeout = 10.seconds
+    private val languageServerPollDelay = 300.milliseconds
+    private val languageServerPollTimeout = 15.seconds
   }
 }
