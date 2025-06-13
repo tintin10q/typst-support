@@ -4,7 +4,6 @@ import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
-import com.intellij.platform.ide.progress.ModalTaskOwner.project
 import com.intellij.platform.lsp.api.LspServerManager
 import com.intellij.platform.lsp.api.LspServerState
 import com.intellij.platform.lsp.api.LspServerSupportProvider
@@ -48,9 +47,7 @@ class LanguageServerManager {
 
   private suspend fun restartCodeAnalyzer(project: Project) {
     LOG.warn("Restarting code analyzer")
-    withContext(Dispatchers.EDT) {
-      DaemonCodeAnalyzer.getInstance(project).restart()
-    }
+    withContext(Dispatchers.EDT) { DaemonCodeAnalyzer.getInstance(project).restart() }
   }
 
   companion object {

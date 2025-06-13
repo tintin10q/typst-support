@@ -16,7 +16,8 @@ data class TinymistBinary(
 
   val downloadUrl
     get() =
-        URI("https://github.com/Myriad-Dreamin/tinymist/releases/download/$versionPath/$compressedFilename")
+        URI(
+            "https://github.com/Myriad-Dreamin/tinymist/releases/download/$versionPath/$compressedFilename")
 
   companion object {
     val binaryFilename = Path("tinymist")

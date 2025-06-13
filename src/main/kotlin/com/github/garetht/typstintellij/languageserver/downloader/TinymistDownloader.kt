@@ -5,18 +5,18 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URI
-import java.nio.file.Files
-import java.nio.file.Path
 import kotlinx.coroutines.ensureActive
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveInputStream
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URI
+import java.nio.file.Files
+import java.nio.file.Path
 
 private val LOG = logger<TinymistDownloader>()
 
