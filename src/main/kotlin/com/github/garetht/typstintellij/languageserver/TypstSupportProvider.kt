@@ -10,6 +10,15 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.LspServerSupportProvider
 
 class TypstSupportProvider : LspServerSupportProvider {
+  private val downloadScheduler by lazy {
+    TinymistDownloadScheduler(
+        TinymistLocationResolver(),
+        TinymistDownloader(),
+        TypstPluginFileSystem(),
+        LanguageServerManager(),
+    )
+  }
+
   override fun fileOpened(
       project: Project,
       file: VirtualFile,
@@ -19,16 +28,6 @@ class TypstSupportProvider : LspServerSupportProvider {
       return
     }
 
-    val typstManager =
-        TypstManager(
-            TinymistDownloadScheduler(
-                TinymistLocationResolver(),
-                TinymistDownloader(),
-                TypstPluginFileSystem(),
-                LanguageServerManager(),
-            ),
-            project,
-            serverStarter)
-    typstManager.startIfRequired()
+    TypstManager(downloadScheduler, project, serverStarter).startIfRequired()
   }
 }
