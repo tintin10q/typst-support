@@ -5,6 +5,7 @@ import com.github.garetht.typstintellij.languageserver.downloader.TinymistDownlo
 import com.intellij.openapi.project.Project
 import com.intellij.platform.lsp.api.LspServerSupportProvider
 
+
 class TypstManager(
     private val lsDownloader: TinymistDownloadScheduler,
     val project: Project,

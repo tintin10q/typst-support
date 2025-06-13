@@ -31,7 +31,7 @@ class TinymistDownloader {
         var readLen: Int
         val destination = path.parent
 
-        LOG.info("Downloading Tinymist from $uri")
+        LOG.warn("Downloading Tinymist from $uri")
 
         reportSequentialProgress(1) { reporter ->
           reporter.indeterminateStep("Checking Tinymist Language Server...")
@@ -71,7 +71,7 @@ class TinymistDownloader {
           }
         }
 
-        LOG.info("Tinymist downloaded and extracted.")
+        LOG.warn("Tinymist downloaded and extracted.")
       }
 
   private fun createArchiveInputStream(uri: URI): ArchiveInputStream<*>? {

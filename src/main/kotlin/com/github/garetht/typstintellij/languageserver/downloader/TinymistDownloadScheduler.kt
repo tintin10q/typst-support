@@ -2,21 +2,17 @@ package com.github.garetht.typstintellij.languageserver.downloader
 
 import com.github.garetht.typstintellij.languageserver.LanguageServerManager
 import com.github.garetht.typstintellij.languageserver.TypstSupportProvider
-import com.github.garetht.typstintellij.languageserver.downloader.LOG
 import com.github.garetht.typstintellij.languageserver.files.TinymistLocationResolver
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import java.net.URI
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.jvm.java
 
-private val LOG = logger<TinymistDownloadScheduler>()
 
 class TinymistDownloadScheduler(
     private val resolver: TinymistLocationResolver,
@@ -52,13 +48,14 @@ class TinymistDownloadScheduler(
                 runBlocking {
                     try {
                         prepAndDownload(project, url, path)
-                        languageServerManager.start(project, TypstSupportProvider::class.java)
                         isDownloading.set(false)
-                    } catch(_: CancellationException) {
+                        languageServerManager.initialStart(project, TypstSupportProvider::class.java)
+                    } catch(ce: CancellationException) {
                         NotificationGroupManager.getInstance()
                             .getNotificationGroup("Typst")
                             .createNotification(DOWNLOAD_CANCELLED_MSG, NotificationType.WARNING)
                             .notify(project)
+                        throw ce
                     }
                 }
             }
