@@ -1,4 +1,4 @@
-package com.github.garetht.typstintellij.languageserver.files
+package com.github.garetht.typstintellij.languageserver.locations
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId

@@ -1,6 +1,6 @@
 package com.github.garetht.typstintellij.languageserver.downloader
 
-import com.github.garetht.typstintellij.languageserver.files.TinymistBinary
+import com.github.garetht.typstintellij.languageserver.locations.TinymistBinary
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress

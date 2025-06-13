@@ -1,6 +1,6 @@
 package com.github.garetht.typstintellij.languageserver
 
-import com.github.garetht.typstintellij.languageserver.files.isSupportedTypstFileType
+import com.github.garetht.typstintellij.languageserver.locations.isSupportedTypstFileType
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile

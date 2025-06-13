@@ -2,7 +2,7 @@ package com.github.garetht.typstintellij.languageserver.downloader
 
 import com.github.garetht.typstintellij.languageserver.LanguageServerManager
 import com.github.garetht.typstintellij.languageserver.TypstSupportProvider
-import com.github.garetht.typstintellij.languageserver.files.TinymistLocationResolver
+import com.github.garetht.typstintellij.languageserver.locations.TinymistLocationResolver
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
