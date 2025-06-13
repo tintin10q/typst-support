@@ -1,5 +1,6 @@
 package com.github.garetht.typstintellij.languageserver
 
+import com.github.garetht.typstintellij.languageserver.files.isSupportedTypstFileType
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -11,5 +12,5 @@ class LanguageServerDescriptor(val languageServerPath: Path, project: Project) :
   override fun createCommandLine(): GeneralCommandLine =
       GeneralCommandLine(languageServerPath.toString())
 
-  override fun isSupportedFile(file: VirtualFile): Boolean = true
+  override fun isSupportedFile(file: VirtualFile): Boolean = file.isSupportedTypstFileType()
 }

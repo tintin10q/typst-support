@@ -10,7 +10,6 @@ class TypstManager(
     val project: Project,
     private val serverStarter: LspServerSupportProvider.LspServerStarter
 ) {
-
   fun startIfRequired() {
     val status = lsDownloader.scheduleDownloadIfRequired(project)
 
