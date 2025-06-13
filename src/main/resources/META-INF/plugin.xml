@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.garetht.typstintellij</id>
-    <name>typst-intellij</name>
+    <name>Typst</name>
     <vendor>garetht</vendor>
 
     <depends>com.intellij.modules.platform</depends>
@@ -9,7 +9,6 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.garetht.typstintellij.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.garetht.typstintellij.startup.MyProjectActivity" />
+        <platform.lsp.serverSupportProvider implementation="com.github.garetht.typstintellij.languageserver.TypstLspServerSupportProvider"/>
     </extensions>
 </idea-plugin>
