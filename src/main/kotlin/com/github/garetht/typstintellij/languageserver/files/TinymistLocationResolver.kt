@@ -4,13 +4,20 @@ import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
 import java.nio.file.Path
 import net.harawata.appdirs.AppDirsFactory
+import java.net.URI
 
 private const val TYPST_INTELLIJ_ID = "com.github.garetht.typstintellij"
 private val version = Version(0, 13, 12)
 
-class LanguageServerLocationResolver {
+class TinymistLocationResolver {
   private val jnaNoClassPathKey = "jna.noclasspath"
   private var jnaNoClassPath: String? = null
+
+  private val binary = TinymistBinary(
+    version = version,
+    osName = OsName.fromString(System.getProperty("os.name")),
+    osArchitecture = OsArchitecture.fromString(System.getProperty("os.arch")),
+  )
 
   private fun pushJnaNoClassPathFalse() {
     jnaNoClassPath = System.getProperty(jnaNoClassPathKey)
@@ -22,13 +29,9 @@ class LanguageServerLocationResolver {
         ?: run { System.clearProperty(jnaNoClassPathKey) }
   }
 
+  fun url(): URI = binary.downloadUrl
+
   fun path(): Path {
-    val binary =
-        TypstLanguageServerBinary(
-            version = version,
-            osName = OsName.fromString(System.getProperty("os.name")),
-            osArchitecture = OsArchitecture.fromString(System.getProperty("os.arch")),
-        )
     PluginManagerCore.getPlugin(PluginId.getId(TYPST_INTELLIJ_ID))!!.run {
       pushJnaNoClassPathFalse()
 
@@ -37,7 +40,7 @@ class LanguageServerLocationResolver {
           Path.of(appDirs.getUserDataDir("Typst", null, "com.github.garetht.typstintellij"))
               .resolve("language-server")
               .resolve(binary.versionPath)
-              .resolve(binary.filename)
+              .resolve(TinymistBinary.binaryFilename)
 
       popJnaNoClassPath()
 

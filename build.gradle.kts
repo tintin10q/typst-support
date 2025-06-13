@@ -1,6 +1,8 @@
+import com.github.javaparser.printer.concretesyntaxmodel.CsmElement.token
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
 
 plugins {
     id("java") // Java support
@@ -16,7 +18,7 @@ version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }
 
 // Configure project's dependencies
@@ -35,6 +37,7 @@ dependencies {
     testImplementation(libs.opentest4j)
 
     implementation(libs.appdirs)
+    implementation(libs.commonsCompress)
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {

@@ -10,11 +10,13 @@ kotlin = "2.1.21"
 kover = "0.9.1"
 qodana = "2024.3.4"
 appdirs = "1.4.0"
+commonsCompress = "1.27.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 opentest4j = { group = "org.opentest4j", name = "opentest4j", version.ref = "opentest4j" }
-appdirs = { group = "net.harawata", name = "appdirs", version.ref = "opentest4j" }
+appdirs = { group = "net.harawata", name = "appdirs", version.ref = "appdirs" }
+commonsCompress = { group = 'org.apache.commons', name = 'commons-compress', version.ref = 'commonsCompress' }
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }

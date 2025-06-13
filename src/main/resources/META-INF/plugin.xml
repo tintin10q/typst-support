@@ -6,9 +6,10 @@
 
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
     <extensions defaultExtensionNs="com.intellij">
-        <platform.lsp.serverSupportProvider implementation="com.github.garetht.typstintellij.languageserver.TypstLspServerSupportProvider"/>
+        <platform.lsp.serverSupportProvider
+                implementation="com.github.garetht.typstintellij.languageserver.TypstSupportProvider"/>
+        <notificationGroup id="Typst"
+                           displayType="BALLOON"/>
     </extensions>
 </idea-plugin>

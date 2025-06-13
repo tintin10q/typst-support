@@ -16,8 +16,8 @@ enum class OsName {
   fun toExtensionPath(): String {
     return when (this) {
       Mac,
-      Linux -> ".tar.gz"
-      Windows -> ".zip"
+      Linux -> "tar.gz"
+      Windows -> "zip"
     }
   }
 
