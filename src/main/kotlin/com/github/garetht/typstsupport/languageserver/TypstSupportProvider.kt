@@ -1,10 +1,10 @@
-package com.github.garetht.typstintellij.languageserver
+package com.github.garetht.typstsupport.languageserver
 
-import com.github.garetht.typstintellij.languageserver.downloader.TinymistDownloadScheduler
-import com.github.garetht.typstintellij.languageserver.downloader.TinymistDownloader
-import com.github.garetht.typstintellij.languageserver.downloader.TypstPluginFileSystem
-import com.github.garetht.typstintellij.languageserver.locations.TinymistLocationResolver
-import com.github.garetht.typstintellij.languageserver.locations.isSupportedTypstFileType
+import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloadScheduler
+import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloader
+import com.github.garetht.typstsupport.languageserver.downloader.TypstPluginFileSystem
+import com.github.garetht.typstsupport.languageserver.locations.TinymistLocationResolver
+import com.github.garetht.typstsupport.languageserver.locations.isSupportedTypstFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.LspServerSupportProvider

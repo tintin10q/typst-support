@@ -1,6 +1,6 @@
-package com.github.garetht.typstintellij.services
+package com.github.garetht.typstsupport.services
 
-import com.github.garetht.typstintellij.MyBundle
+import com.github.garetht.typstsupport.MyBundle
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project

@@ -1,4 +1,4 @@
-package com.github.garetht.typstintellij.startup
+package com.github.garetht.typstsupport.startup
 
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project

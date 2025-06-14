@@ -1,4 +1,4 @@
-package com.github.garetht.typstintellij.languageserver
+package com.github.garetht.typstsupport.languageserver
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.EDT

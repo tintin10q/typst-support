@@ -1,4 +1,4 @@
-package com.github.garetht.typstintellij.languageserver.locations
+package com.github.garetht.typstsupport.languageserver.locations
 
 import java.net.URI
 import kotlin.io.path.Path

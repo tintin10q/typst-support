@@ -1,4 +1,4 @@
-package com.github.garetht.typstintellij.editor
+package com.github.garetht.typstsupport.editor
 
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.TextEditorWithPreview

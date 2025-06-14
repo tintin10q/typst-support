@@ -1,7 +1,7 @@
-package com.github.garetht.typstintellij.toolWindow
+package com.github.garetht.typstsupport.toolWindow
 
-import com.github.garetht.typstintellij.MyBundle
-import com.github.garetht.typstintellij.services.MyProjectService
+import com.github.garetht.typstsupport.MyBundle
+import com.github.garetht.typstsupport.services.MyProjectService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project

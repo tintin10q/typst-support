@@ -1,6 +1,6 @@
-package com.github.garetht.typstintellij.editor
+package com.github.garetht.typstsupport.editor
 
-import com.github.garetht.typstintellij.languageserver.locations.isSupportedTypstFileType
+import com.github.garetht.typstsupport.languageserver.locations.isSupportedTypstFileType
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorPolicy
 import com.intellij.openapi.fileEditor.FileEditorProvider

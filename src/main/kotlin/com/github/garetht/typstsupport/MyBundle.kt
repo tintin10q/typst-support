@@ -1,4 +1,4 @@
-package com.github.garetht.typstintellij
+package com.github.garetht.typstsupport
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls

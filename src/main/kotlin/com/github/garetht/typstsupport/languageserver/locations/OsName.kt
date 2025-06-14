@@ -1,4 +1,4 @@
-package com.github.garetht.typstintellij.languageserver.locations
+package com.github.garetht.typstsupport.languageserver.locations
 
 enum class OsName {
   Mac,

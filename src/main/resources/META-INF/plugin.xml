@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.garetht.typstintellij</id>
+    <id>com.github.garetht.typstsupport</id>
     <name>Typst</name>
     <vendor>garetht</vendor>
 
@@ -8,12 +8,12 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <platform.lsp.serverSupportProvider
-                implementation="com.github.garetht.typstintellij.languageserver.TypstSupportProvider"/>
+                implementation="com.github.garetht.typstsupport.languageserver.TypstSupportProvider"/>
         <notificationGroup id="Typst"
                            displayType="BALLOON"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileEditorProvider implementation="com.github.garetht.typstintellij.editor.TypstEditorProvider"/>
+        <fileEditorProvider implementation="com.github.garetht.typstsupport.editor.TypstEditorProvider"/>
     </extensions>
 </idea-plugin>

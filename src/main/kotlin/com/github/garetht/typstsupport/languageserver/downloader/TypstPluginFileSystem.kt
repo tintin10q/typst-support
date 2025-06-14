@@ -1,4 +1,4 @@
-package com.github.garetht.typstintellij.languageserver.downloader
+package com.github.garetht.typstsupport.languageserver.downloader
 
 import java.nio.file.FileSystems
 import java.nio.file.Files
