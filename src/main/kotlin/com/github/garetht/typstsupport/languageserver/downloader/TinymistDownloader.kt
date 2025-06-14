@@ -24,7 +24,7 @@ class TinymistDownloader {
   suspend fun download(project: Project, uri: URI, path: Path) =
       withBackgroundProgress(
           project,
-          title = "Typst",
+          title = "TypstSupport",
           cancellable = true,
       ) {
         val readBuffer = ByteArray(4096)

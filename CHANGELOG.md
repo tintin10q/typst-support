@@ -1,6 +1,6 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# typst-intellij Changelog
+# typst-support Changelog
 
 ## [Unreleased]
 ### Added

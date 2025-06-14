@@ -54,7 +54,7 @@ class TinymistDownloadScheduler(
             languageServerManager.initialStart(project, TypstSupportProvider::class.java)
           } catch (ce: CancellationException) {
             NotificationGroupManager.getInstance()
-                .getNotificationGroup("Typst")
+                .getNotificationGroup("TypstSupport")
                 .createNotification(DOWNLOAD_CANCELLED_MSG, NotificationType.WARNING)
                 .notify(project)
             throw ce

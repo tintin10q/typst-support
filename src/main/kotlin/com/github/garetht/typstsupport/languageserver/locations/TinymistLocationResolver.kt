@@ -6,7 +6,7 @@ import net.harawata.appdirs.AppDirsFactory
 import java.net.URI
 import java.nio.file.Path
 
-private const val TYPST_INTELLIJ_ID = "com.github.garetht.typstintellij"
+private const val TYPST_SUPPORT_ID = "com.github.garetht.typstsupport"
 private val version = Version(0, 13, 12)
 
 class TinymistLocationResolver {
@@ -33,12 +33,12 @@ class TinymistLocationResolver {
   fun url(): URI = binary.downloadUrl
 
   fun path(): Path {
-    PluginManagerCore.getPlugin(PluginId.getId(TYPST_INTELLIJ_ID))!!.run {
+    PluginManagerCore.getPlugin(PluginId.getId(TYPST_SUPPORT_ID))!!.run {
       pushJnaNoClassPathFalse()
 
       val appDirs = AppDirsFactory.getInstance()
       val path =
-          Path.of(appDirs.getUserDataDir("Typst", null, "com.github.garetht.typstintellij"))
+          Path.of(appDirs.getUserDataDir("TypstSupport", null, "com.github.garetht.typstsupport"))
               .resolve("language-server")
               .resolve(binary.versionPath)
               .resolve(TinymistBinary.binaryFilename)
