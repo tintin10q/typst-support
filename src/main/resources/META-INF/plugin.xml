@@ -15,5 +15,24 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileEditorProvider implementation="com.github.garetht.typstsupport.editor.TypstEditorProvider"/>
+
+        <fileType
+                name="Typst File"
+                implementationClass="com.github.garetht.typstsupport.language.filetype.TypstFileType"
+                fieldName="INSTANCE"
+                language="Typst"
+                extensions="typ"/>
+        <fileType
+                name="Typst Math File"
+                implementationClass="com.github.garetht.typstsupport.language.filetype.TypstMathFileType"
+                fieldName="INSTANCE"
+                language="TypstMath"
+                extensions="typm"/>
+        <fileType
+                name="Typst Code File"
+                implementationClass="com.github.garetht.typstsupport.language.filetype.TypstCodeFileType"
+                fieldName="INSTANCE"
+                language="TypstCode"
+                extensions="typc"/>
     </extensions>
 </idea-plugin>
