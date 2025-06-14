@@ -20,11 +20,12 @@ class TypstPreviewEditor(private val project: Project, private val file: Virtual
     UserDataHolderBase(), FileEditor {
 
   private val panel = JPanel(BorderLayout())
-  private val browser = JBCefBrowser.createBuilder()
-    .setOffScreenRendering(false)
-    .setUrl("http://127.0.0.1:23625/")
-    .setMouseWheelEventEnable(false)
-    .build()
+  private val browser =
+      JBCefBrowser.createBuilder()
+          .setOffScreenRendering(false)
+          .setUrl("http://127.0.0.1:23625/")
+          .setMouseWheelEventEnable(false)
+          .build()
 
   init {
     panel.add(browser.component, BorderLayout.CENTER)
@@ -37,23 +38,26 @@ class TypstPreviewEditor(private val project: Project, private val file: Virtual
       val scrollDelta = e.wheelRotation * e.scrollAmount * 3.5
 
       // Convert to horizontal scroll if Shift is pressed, otherwise vertical
-      val deltaX = if (isShiftPressed) {
-        scrollDelta
-      } else {
-        0.0
-      }
-      val deltaY = if (isShiftPressed) {
-        0.0
-      } else {
-        scrollDelta
-      }
+      val deltaX =
+          if (isShiftPressed) {
+            scrollDelta
+          } else {
+            0.0
+          }
+      val deltaY =
+          if (isShiftPressed) {
+            0.0
+          } else {
+            scrollDelta
+          }
 
       transmitScrollToPage(deltaX, deltaY)
     }
   }
 
   private fun transmitScrollToPage(deltaX: Double, deltaY: Double) {
-    val scrollScript = """
+    val scrollScript =
+        """
     (function() {
       // Create and dispatch a wheel event
       var wheelEvent = new WheelEvent('wheel', {
@@ -72,7 +76,8 @@ class TypstPreviewEditor(private val project: Project, private val file: Virtual
       // Manually scroll the page
       window.scrollBy($deltaX, $deltaY);
     })();
-  """.trimIndent()
+  """
+            .trimIndent()
 
     browser.cefBrowser.executeJavaScript(scrollScript, "", 0)
   }

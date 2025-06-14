@@ -18,5 +18,6 @@ class TypstEditorProvider : FileEditorProvider, DumbAware {
   }
 
   override fun getEditorTypeId(): String = "typst-split-editor"
+
   override fun getPolicy(): FileEditorPolicy = FileEditorPolicy.HIDE_DEFAULT_EDITOR
 }

@@ -4,9 +4,6 @@ import com.intellij.lang.Language
 
 class TypstMathLanguage : Language("TypstMath") {
   companion object {
-    @JvmStatic
-    val INSTANCE: TypstMathLanguage = TypstMathLanguage()
+    @JvmStatic val INSTANCE: TypstMathLanguage = TypstMathLanguage()
   }
 }
-
-

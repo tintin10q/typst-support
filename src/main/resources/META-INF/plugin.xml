@@ -17,22 +17,24 @@
         <fileEditorProvider implementation="com.github.garetht.typstsupport.editor.TypstEditorProvider"/>
 
         <fileType
-                name="Typst File"
+                name="Typst"
                 implementationClass="com.github.garetht.typstsupport.language.filetype.TypstFileType"
                 fieldName="INSTANCE"
                 language="Typst"
                 extensions="typ"/>
         <fileType
-                name="Typst Math File"
+                name="Typst Math"
                 implementationClass="com.github.garetht.typstsupport.language.filetype.TypstMathFileType"
                 fieldName="INSTANCE"
                 language="TypstMath"
                 extensions="typm"/>
         <fileType
-                name="Typst Code File"
+                name="Typst Code"
                 implementationClass="com.github.garetht.typstsupport.language.filetype.TypstCodeFileType"
                 fieldName="INSTANCE"
                 language="TypstCode"
                 extensions="typc"/>
+
+        <projectConfigurable instance="com.github.garetht.typstsupport.configuration.TypstConfigurable" displayName="Typst Support Settings" />
     </extensions>
 </idea-plugin>
