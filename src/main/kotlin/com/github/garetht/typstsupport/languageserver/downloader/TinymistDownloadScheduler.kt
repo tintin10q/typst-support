@@ -3,8 +3,7 @@ package com.github.garetht.typstsupport.languageserver.downloader
 import com.github.garetht.typstsupport.languageserver.LanguageServerManager
 import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
 import com.github.garetht.typstsupport.languageserver.locations.TinymistLocationResolver
-import com.intellij.notification.NotificationGroupManager
-import com.intellij.notification.NotificationType
+import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CancellationException
@@ -14,10 +13,10 @@ import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
 
 class TinymistDownloadScheduler(
-    private val resolver: TinymistLocationResolver,
-    private val downloader: TinymistDownloader,
-    private val fileSystem: TypstPluginFileSystem,
-    private val languageServerManager: LanguageServerManager
+  private val resolver: TinymistLocationResolver,
+  private val downloader: TinymistDownloader,
+  private val fileSystem: TypstPluginFileSystem,
+  private val languageServerManager: LanguageServerManager
 ) {
 
   companion object {
@@ -26,7 +25,7 @@ class TinymistDownloadScheduler(
     fun resetDownloadingStatus() = isDownloading.set(false)
 
     private const val DOWNLOAD_CANCELLED_MSG =
-        "You have cancelled the Typst Language Server download.\n\n To retry, restart the IDE."
+      "The Typst Language Server download was cancelled.\n\n To retry, restart the IDE."
   }
 
   private suspend fun prepAndDownload(project: Project, url: URI, path: Path) {
@@ -37,7 +36,6 @@ class TinymistDownloadScheduler(
 
   fun scheduleDownloadIfRequired(project: Project): DownloadStatus {
     val path = resolver.path()
-    val url = resolver.url()
     if (isDownloading.get()) {
       return DownloadStatus.Downloading
     }
@@ -49,14 +47,12 @@ class TinymistDownloadScheduler(
       ApplicationManager.getApplication().executeOnPooledThread {
         runBlocking {
           try {
+            val url = resolver.downloadUrl()
             prepAndDownload(project, url, path)
             isDownloading.set(false)
             languageServerManager.initialStart(project, TypstSupportProvider::class.java)
           } catch (ce: CancellationException) {
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("TypstSupport")
-                .createNotification(DOWNLOAD_CANCELLED_MSG, NotificationType.WARNING)
-                .notify(project)
+            Notifier.warn(project, DOWNLOAD_CANCELLED_MSG)
             throw ce
           }
         }

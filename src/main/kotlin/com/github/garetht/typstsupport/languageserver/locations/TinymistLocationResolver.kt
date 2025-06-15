@@ -1,7 +1,12 @@
 package com.github.garetht.typstsupport.languageserver.locations
 
+import com.github.garetht.typstsupport.configuration.BinarySource
+import com.github.garetht.typstsupport.configuration.PathValidation
+import com.github.garetht.typstsupport.configuration.SettingsState
+import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
+import com.intellij.openapi.project.Project
 import net.harawata.appdirs.AppDirsFactory
 import java.net.URI
 import java.nio.file.Path
@@ -9,16 +14,18 @@ import java.nio.file.Path
 private const val TYPST_SUPPORT_ID = "com.github.garetht.typstsupport"
 private val version = Version(0, 13, 12)
 
-class TinymistLocationResolver {
+class TinymistLocationResolver(private val project: Project) {
   private val jnaNoClassPathKey = "jna.noclasspath"
   private var jnaNoClassPath: String? = null
 
+  private val settings = SettingsState.getInstance()
+
   private val binary =
-      TinymistBinary(
-          version = version,
-          osName = OsName.fromString(System.getProperty("os.name")),
-          osArchitecture = OsArchitecture.fromString(System.getProperty("os.arch")),
-      )
+    TinymistBinary(
+      version = version,
+      osName = OsName.fromString(System.getProperty("os.name")),
+      osArchitecture = OsArchitecture.fromString(System.getProperty("os.arch")),
+    )
 
   private fun pushJnaNoClassPathFalse() {
     jnaNoClassPath = System.getProperty(jnaNoClassPathKey)
@@ -27,21 +34,34 @@ class TinymistLocationResolver {
 
   private fun popJnaNoClassPath() {
     jnaNoClassPath?.let { System.setProperty(jnaNoClassPathKey, it) }
-        ?: run { System.clearProperty(jnaNoClassPathKey) }
+      ?: run { System.clearProperty(jnaNoClassPathKey) }
   }
 
-  fun url(): URI = binary.downloadUrl
+  fun downloadUrl(): URI = binary.downloadUrl
 
   fun path(): Path {
+    if (settings.state.binarySource == BinarySource.USE_CUSTOM_BINARY) {
+      when (val result = PathValidation.validateBinaryFile(settings.state.customBinaryPath)) {
+        is PathValidation.Failed -> {
+          Notifier.warn(
+            project,
+            "The specified Tinymist path is invalid: ${result.message}, falling back to automatically downloaded Tinymist."
+          )
+        }
+
+        PathValidation.Success -> return Path.of(settings.state.customBinaryPath)
+      }
+    }
+
     PluginManagerCore.getPlugin(PluginId.getId(TYPST_SUPPORT_ID))!!.run {
       pushJnaNoClassPathFalse()
 
       val appDirs = AppDirsFactory.getInstance()
       val path =
-          Path.of(appDirs.getUserDataDir("TypstSupport", null, "com.github.garetht.typstsupport"))
-              .resolve("language-server")
-              .resolve(binary.versionPath)
-              .resolve(TinymistBinary.binaryFilename)
+        Path.of(appDirs.getUserDataDir("TypstSupport", null, "com.github.garetht.typstsupport"))
+          .resolve("language-server")
+          .resolve(binary.versionPath)
+          .resolve(TinymistBinary.binaryFilename)
 
       popJnaNoClassPath()
       return path

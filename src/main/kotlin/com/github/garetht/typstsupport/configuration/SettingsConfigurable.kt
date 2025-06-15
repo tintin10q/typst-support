@@ -1,16 +1,21 @@
 package com.github.garetht.typstsupport.configuration
 
 import com.github.garetht.typstsupport.configuration.PathValidation.Companion.validateBinaryFile
+import com.github.garetht.typstsupport.languageserver.LanguageServerManager
 import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
+import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.platform.lsp.api.LspServerManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.dsl.builder.AlignX
@@ -19,6 +24,7 @@ import com.intellij.ui.dsl.builder.bind
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
+import kotlinx.coroutines.runBlocking
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
@@ -105,6 +111,7 @@ class TypstSettingsConfigurable :
     testResultLabel.component.icon = null
   }
 
+
   private fun testBinaryExecution(binaryPath: String) {
     // Clear previous result
     this.resetTestResultLabel()
@@ -161,5 +168,25 @@ class TypstSettingsConfigurable :
     }
 
     super.apply()
+
+    ApplicationManager.getApplication().invokeLater {
+      val projectManager = ApplicationManager.getApplication().service<ProjectManager>()
+      val openProjects = projectManager.openProjects
+      openProjects.forEach { project ->
+        ApplicationManager.getApplication().executeOnPooledThread {
+          runBlocking {
+            if (project.isDisposed) {
+              return@runBlocking
+            }
+
+            val manager = project.service<LspServerManager>()
+            val providerClass = TypstSupportProvider::class.java
+            manager.stopAndRestartIfNeeded(providerClass)
+            LanguageServerManager.repaintOnIntialize(manager, project, providerClass)
+            Notifier.info(project, "Restarting Tinymist server...")
+          }
+        }
+      }
+    }
   }
 }

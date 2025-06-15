@@ -18,23 +18,22 @@ import com.intellij.platform.lsp.api.lsWidget.LspServerWidgetItem
 private val LOG = logger<TypstSupportProvider>()
 
 class TypstSupportProvider : LspServerSupportProvider {
-  private val downloadScheduler by lazy {
-    TinymistDownloadScheduler(
-        TinymistLocationResolver(),
-        TinymistDownloader(),
-        TypstPluginFileSystem(),
-        LanguageServerManager(),
-    )
-  }
 
   override fun fileOpened(
-      project: Project,
-      file: VirtualFile,
-      serverStarter: LspServerSupportProvider.LspServerStarter
+    project: Project,
+    file: VirtualFile,
+    serverStarter: LspServerSupportProvider.LspServerStarter
   ) {
     if (!file.isSupportedTypstFileType()) {
       return
     }
+
+    val downloadScheduler = TinymistDownloadScheduler(
+      TinymistLocationResolver(project),
+      TinymistDownloader(),
+      TypstPluginFileSystem(),
+      LanguageServerManager(),
+    )
 
     TypstManager(downloadScheduler, project, serverStarter).startIfRequired()
   }
@@ -43,8 +42,6 @@ class TypstSupportProvider : LspServerSupportProvider {
     lspServer: LspServer,
     currentFile: VirtualFile?
   ): LspServerWidgetItem? {
-    LOG.warn(lspServer.javaClass.canonicalName)
-    LOG.warn(lspServer.providerClass.canonicalName)
     return object : LspServerWidgetItem(
       lspServer,
       currentFile,
