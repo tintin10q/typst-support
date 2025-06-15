@@ -1,15 +1,18 @@
 package com.github.garetht.typstsupport.configuration
 
+import com.github.garetht.typstsupport.configuration.PathValidation.Companion.validateBinaryFile
 import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
-import com.github.garetht.typstsupport.languageserver.locations.Version
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Cell
@@ -17,8 +20,8 @@ import com.intellij.ui.dsl.builder.bind
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
-import java.io.File
 import javax.swing.JLabel
+import javax.swing.SwingConstants
 
 private val LOG = logger<TypstSupportProvider>()
 
@@ -33,6 +36,9 @@ class TypstSettingsConfigurable(private val project: Project) :
   // Remove custom setters - let the UI binding handle updates
   private var binaryConfig = BinaryConfiguration.USE_AUTOMATIC_DOWNLOAD
   private var customBinaryPath = ""
+  private lateinit var fileField: Cell<TextFieldWithBrowseButton>
+  private lateinit var customRadioButton: Cell<JBRadioButton>
+  private lateinit var testResultLabel: Cell<JLabel>
 
   private val propertiesComponent = PropertiesComponent.getInstance(project)
 
@@ -50,15 +56,18 @@ class TypstSettingsConfigurable(private val project: Project) :
           )
         }
 
-        lateinit var customRadioButton: Cell<JBRadioButton>
         row {
           customRadioButton =
             radioButton(
               "Specify local binary location", BinaryConfiguration.USE_CUSTOM_BINARY
             )
+              .onChanged {
+                if (it.isSelected) {
+                  this@TypstSettingsConfigurable.resetTestResultLabel()
+                }
+              }
         }
-//
-        lateinit var fileField: Cell<*>
+
         row {
           fileField =
             textFieldWithBrowseButton(
@@ -76,25 +85,82 @@ class TypstSettingsConfigurable(private val project: Project) :
               .resizableColumn()
               .align(AlignX.FILL)
               .validationOnInput {
-                when (val result = validateBinary(it.text)) {
-                  is ValidationResult.Failed -> error(result.message)
-                  is ValidationResult.Success -> null
-                }
+                validateBinaryFile(it.text).toValidationInfo(this)
               }
         }
+
+        row {
+          button("Test Binary") {
+            testBinaryExecution(fileField.component.text)
+          }
+            .enabledIf(customRadioButton.selected)
+
+          testResultLabel = label("")
+            .visibleIf(customRadioButton.selected)
+          testResultLabel.component.horizontalAlignment = SwingConstants.LEFT
+        }
+
       }
         .bind(
           { binaryConfig },
           { value ->
-            LOG.warn("Binary config changed to $value")
             binaryConfig = value
           })
     }
   }
 
+  private fun resetTestResultLabel() {
+    testResultLabel.component.text = ""
+    testResultLabel.component.icon = null
+  }
+
+  private fun testBinaryExecution(binaryPath: String) {
+    // Clear previous result
+    this.resetTestResultLabel()
+
+    // Run validation in background thread to avoid blocking UI
+    ApplicationManager.getApplication().executeOnPooledThread {
+      try {
+        val result = ExecutionValidation.validateBinaryExecution(binaryPath)
+        // Update UI on EDT
+        ApplicationManager.getApplication().invokeLater({
+          updateTestResult(result)
+        }, ModalityState.any())
+      } catch (e: Exception) {
+        ApplicationManager.getApplication().invokeLater({
+          updateTestResult(ExecutionValidation.Failed("Error during validation: ${e.message}"))
+        }, ModalityState.any())
+      }
+    }
+  }
+
+  private fun updateTestResult(result: ExecutionValidation) {
+    when (result) {
+      is ExecutionValidation.Success -> {
+        testResultLabel.component.icon = AllIcons.General.InspectionsOK
+        testResultLabel.component.text = "Success: ${result.version.toConsoleString()}"
+        testResultLabel.component.foreground = JBColor.GREEN
+      }
+
+      is ExecutionValidation.Failed -> {
+        testResultLabel.component.icon = AllIcons.General.Error
+        testResultLabel.component.text = "Failed: ${result.message}"
+        testResultLabel.component.foreground = JBColor.RED
+      }
+    }
+  }
+
+
   override fun apply() {
+    if (customRadioButton.selected()) {
+      val exception = validateBinaryFile(fileField.component.text)
+        .toConfigurationException()
+      if (exception != null) {
+        throw exception
+      }
+    }
+
     super.apply()
-    LOG.warn("applying!!")
     saveSettings()
   }
 
@@ -120,85 +186,6 @@ class TypstSettingsConfigurable(private val project: Project) :
     propertiesComponent.setValue(USE_CUSTOM_BINARY_KEY, useCustomBinary)
     propertiesComponent.setValue(CUSTOM_BINARY_PATH_KEY, customBinaryPath)
   }
-
-  // Result sealed class to represent validation outcomes
-  sealed interface ValidationResult {
-    data class Success(val message: String) : ValidationResult
-
-    data class Failed(val message: String) : ValidationResult
-  }
-
-  private fun validateBinary(binaryPath: String): ValidationResult {
-    if (binaryPath.isEmpty()) {
-      return ValidationResult.Failed("Binary path is empty")
-    }
-
-    val file = File(binaryPath)
-    if (!file.exists()) {
-      return ValidationResult.Failed("Binary file does not exist")
-    }
-
-    if (!file.canExecute()) {
-      return ValidationResult.Failed("Binary file is not executable")
-    }
-
-    return try {
-      val commandLine = GeneralCommandLine(binaryPath, "-V")
-      commandLine.workDirectory = file.parentFile
-
-      val processHandler = CapturingProcessHandler(commandLine)
-      val result = processHandler.runProcess(10000)
-
-      if (result.exitCode == 0) {
-        val output = result.stdout.trim()
-        val version = Version.parseVersion(output)
-        if (version != null) {
-          ValidationResult.Success("Valid tinymist binary (${version.toPathString()})")
-        } else {
-          ValidationResult.Failed("Invalid binary output format")
-        }
-      } else {
-        val errorOutput = result.stderr.ifEmpty { result.stdout }.trim()
-
-        val errorMessage =
-          when {
-            errorOutput.contains("cannot be opened because the developer cannot be verified") ||
-                    errorOutput.contains("malware") ||
-                    errorOutput.contains("not trusted") ||
-                    result.exitCode == 126 -> {
-              "macOS blocked execution - check Security & Privacy settings"
-            }
-
-            errorOutput.contains("Permission denied") -> {
-              "Permission denied - make binary executable"
-            }
-
-            errorOutput.contains("No such file") -> {
-              "Binary not found at specified path"
-            }
-
-            else -> {
-              "Binary validation failed: ${errorOutput.take(50)}"
-            }
-          }
-        ValidationResult.Failed(errorMessage)
-      }
-    } catch (e: Exception) {
-      val message =
-        when {
-          e.message?.contains("Permission denied") == true ->
-            "Permission denied - check file permissions"
-
-          e.message?.contains("No such file") == true -> "Binary file not found"
-          e.message?.contains("cannot execute") == true ->
-            "Cannot execute binary - may be blocked by macOS security"
-
-          else -> "Failed to execute binary: ${e.message?.take(50)}"
-        }
-      ValidationResult.Failed(message)
-    }
-  }
-
 
   companion object {
     private const val USE_CUSTOM_BINARY_KEY = "typst.tinymist.useCustomBinary"

@@ -7,6 +7,10 @@ data class Version(val major: Int, val minor: Int, val patch: Int) {
     return "v$major.$minor.$patch"
   }
 
+  fun toConsoleString(): String {
+    return "tinymist ${toPathString()}"
+  }
+
   companion object {
     fun parseVersion(output: String): Version? {
       // Pattern to match "tinymist X.Y.Z" format
