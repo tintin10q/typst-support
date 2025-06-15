@@ -3,14 +3,12 @@ package com.github.garetht.typstsupport.configuration
 import com.github.garetht.typstsupport.configuration.PathValidation.Companion.validateBinaryFile
 import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
 import com.intellij.icons.AllIcons
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.options.ConfigurationException
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.JBColor
@@ -26,27 +24,19 @@ import javax.swing.SwingConstants
 
 private val LOG = logger<TypstSupportProvider>()
 
-class TypstSettingsConfigurable(private val project: Project) :
+class TypstSettingsConfigurable :
   BoundSearchableConfigurable("Typst Support Settings", "") {
 
-  private enum class BinaryConfiguration {
-    USE_AUTOMATIC_DOWNLOAD,
-    USE_CUSTOM_BINARY
-  }
+  // our persisted settings
+  private val settings = SettingsState.getInstance()
 
-  // Remove custom setters - let the UI binding handle updates
-  private var binaryConfig = BinaryConfiguration.USE_AUTOMATIC_DOWNLOAD
-  private var customBinaryPath = ""
+  // UI Elements
   private lateinit var fileField: Cell<TextFieldWithBrowseButton>
   private lateinit var customRadioButton: Cell<JBRadioButton>
   private lateinit var testResultLabel: Cell<JLabel>
+
+  // Component-internal state
   private var binaryExecutionValidated: Boolean = false
-
-  private val propertiesComponent = PropertiesComponent.getInstance(project)
-
-  init {
-    loadSettings()
-  }
 
   override fun createPanel(): DialogPanel {
     return panel {
@@ -54,14 +44,14 @@ class TypstSettingsConfigurable(private val project: Project) :
         row {
           radioButton(
             "Use automatically downloaded binary",
-            BinaryConfiguration.USE_AUTOMATIC_DOWNLOAD
+            BinarySource.USE_AUTOMATIC_DOWNLOAD
           )
         }
 
         row {
           customRadioButton =
             radioButton(
-              "Specify local binary location", BinaryConfiguration.USE_CUSTOM_BINARY
+              "Specify local binary location", BinarySource.USE_CUSTOM_BINARY
             )
               .onChanged {
                 if (it.isSelected) {
@@ -80,10 +70,9 @@ class TypstSettingsConfigurable(private val project: Project) :
                     val extension = virtualFile.extension
                     extension == null || extension.lowercase() == "exe"
                   },
-              project = project
             )
               .enabledIf(customRadioButton.selected)
-              .bindText(::customBinaryPath)
+              .bindText(settings.state::customBinaryPath)
               .resizableColumn()
               .align(AlignX.FILL)
               .validationOnInput {
@@ -107,11 +96,7 @@ class TypstSettingsConfigurable(private val project: Project) :
         }
 
       }
-        .bind(
-          { binaryConfig },
-          { value ->
-            binaryConfig = value
-          })
+        .bind(settings.state::binarySource)
     }
   }
 
@@ -176,34 +161,5 @@ class TypstSettingsConfigurable(private val project: Project) :
     }
 
     super.apply()
-    saveSettings()
-  }
-
-  override fun reset() {
-    loadSettings()
-    super.reset()
-  }
-
-  private fun loadSettings() {
-    val useCustomBinary = propertiesComponent.getBoolean(USE_CUSTOM_BINARY_KEY, false)
-    binaryConfig =
-      if (useCustomBinary) {
-        BinaryConfiguration.USE_CUSTOM_BINARY
-      } else {
-        BinaryConfiguration.USE_AUTOMATIC_DOWNLOAD
-      }
-
-    customBinaryPath = propertiesComponent.getValue(CUSTOM_BINARY_PATH_KEY, "")
-  }
-
-  private fun saveSettings() {
-    val useCustomBinary = binaryConfig == BinaryConfiguration.USE_CUSTOM_BINARY
-    propertiesComponent.setValue(USE_CUSTOM_BINARY_KEY, useCustomBinary)
-    propertiesComponent.setValue(CUSTOM_BINARY_PATH_KEY, customBinaryPath)
-  }
-
-  companion object {
-    private const val USE_CUSTOM_BINARY_KEY = "typst.tinymist.useCustomBinary"
-    private const val CUSTOM_BINARY_PATH_KEY = "typst.tinymist.customBinaryPath"
   }
 }
