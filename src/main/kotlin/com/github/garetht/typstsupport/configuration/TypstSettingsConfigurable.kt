@@ -9,6 +9,7 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.BoundSearchableConfigurable
+import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -39,6 +40,7 @@ class TypstSettingsConfigurable(private val project: Project) :
   private lateinit var fileField: Cell<TextFieldWithBrowseButton>
   private lateinit var customRadioButton: Cell<JBRadioButton>
   private lateinit var testResultLabel: Cell<JLabel>
+  private var binaryExecutionValidated: Boolean = false
 
   private val propertiesComponent = PropertiesComponent.getInstance(project)
 
@@ -87,6 +89,10 @@ class TypstSettingsConfigurable(private val project: Project) :
               .validationOnInput {
                 validateBinaryFile(it.text).toValidationInfo(this)
               }
+              .onChanged {
+                binaryExecutionValidated = false
+                resetTestResultLabel()
+              }
         }
 
         row {
@@ -122,6 +128,11 @@ class TypstSettingsConfigurable(private val project: Project) :
     ApplicationManager.getApplication().executeOnPooledThread {
       try {
         val result = ExecutionValidation.validateBinaryExecution(binaryPath)
+
+        binaryExecutionValidated = when (result) {
+          is ExecutionValidation.Failed -> false
+          is ExecutionValidation.Success -> true
+        }
         // Update UI on EDT
         ApplicationManager.getApplication().invokeLater({
           updateTestResult(result)
@@ -157,6 +168,10 @@ class TypstSettingsConfigurable(private val project: Project) :
         .toConfigurationException()
       if (exception != null) {
         throw exception
+      }
+
+      if (!binaryExecutionValidated) {
+        throw ConfigurationException("The binary should be tested with Test Binary before applying")
       }
     }
 
