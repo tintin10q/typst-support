@@ -32,7 +32,7 @@ class TypstSupportProvider : LspServerSupportProvider {
       TinymistLocationResolver(project),
       TinymistDownloader(),
       TypstPluginFileSystem(),
-      LanguageServerManager(),
+      TypstLanguageServerManager(),
     )
 
     TypstManager(downloadScheduler, project, serverStarter).startIfRequired()

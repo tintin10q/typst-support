@@ -1,9 +1,10 @@
 package com.github.garetht.typstsupport.configuration
 
 import com.github.garetht.typstsupport.configuration.PathValidation.Companion.validateBinaryFile
-import com.github.garetht.typstsupport.languageserver.LanguageServerManager
+import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
 import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
 import com.github.garetht.typstsupport.notifier.Notifier
+import com.intellij.application.options.MLCodeCompletionConfigurableEP.providerClass
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
@@ -15,7 +16,6 @@ import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.platform.lsp.api.LspServerManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.dsl.builder.AlignX
@@ -172,17 +172,14 @@ class TypstSettingsConfigurable :
     ApplicationManager.getApplication().invokeLater {
       val projectManager = ApplicationManager.getApplication().service<ProjectManager>()
       val openProjects = projectManager.openProjects
+      val manager = TypstLanguageServerManager()
       openProjects.forEach { project ->
         ApplicationManager.getApplication().executeOnPooledThread {
           runBlocking {
             if (project.isDisposed) {
               return@runBlocking
             }
-
-            val manager = project.service<LspServerManager>()
-            val providerClass = TypstSupportProvider::class.java
-            manager.stopAndRestartIfNeeded(providerClass)
-            LanguageServerManager.repaintOnIntialize(manager, project, providerClass)
+            manager.initialStart(project)
             Notifier.info(project, "Restarting Tinymist server...")
           }
         }

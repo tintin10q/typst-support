@@ -14,12 +14,13 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-private val LOG = logger<LanguageServerManager>()
+private val LOG = logger<TypstLanguageServerManager>()
 
-class LanguageServerManager {
-  suspend fun initialStart(project: Project, providerClass: Class<out LspServerSupportProvider>) {
+class TypstLanguageServerManager {
+  suspend fun initialStart(project: Project) {
+    val providerClass = TypstSupportProvider::class.java
     val manager = LspServerManager.getInstance(project)
-    manager.startServersIfNeeded(providerClass)
+    manager.stopAndRestartIfNeeded(providerClass)
     repaintOnIntialize(manager, project, providerClass)
   }
 
@@ -46,7 +47,7 @@ class LanguageServerManager {
 
           delay(languageServerPollDelay)
         }
-      } ?: LanguageServerManager.run { restartCodeAnalyzer(project) }
+      } ?: TypstLanguageServerManager.run { restartCodeAnalyzer(project) }
     }
 
     private suspend fun restartCodeAnalyzer(project: Project) {

@@ -1,7 +1,6 @@
 package com.github.garetht.typstsupport.languageserver.downloader
 
-import com.github.garetht.typstsupport.languageserver.LanguageServerManager
-import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
+import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
 import com.github.garetht.typstsupport.languageserver.locations.TinymistLocationResolver
 import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.openapi.application.ApplicationManager
@@ -16,7 +15,7 @@ class TinymistDownloadScheduler(
   private val resolver: TinymistLocationResolver,
   private val downloader: TinymistDownloader,
   private val fileSystem: TypstPluginFileSystem,
-  private val languageServerManager: LanguageServerManager
+  private val languageServerManager: TypstLanguageServerManager
 ) {
 
   companion object {
@@ -50,7 +49,7 @@ class TinymistDownloadScheduler(
             val url = resolver.downloadUrl()
             prepAndDownload(project, url, path)
             isDownloading.set(false)
-            languageServerManager.initialStart(project, TypstSupportProvider::class.java)
+            languageServerManager.initialStart(project)
           } catch (ce: CancellationException) {
             Notifier.warn(project, DOWNLOAD_CANCELLED_MSG)
             throw ce
