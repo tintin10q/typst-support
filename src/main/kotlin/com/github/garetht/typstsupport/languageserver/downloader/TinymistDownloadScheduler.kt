@@ -33,12 +33,13 @@ class TinymistDownloadScheduler(
     fileSystem.setExecutable(path)
   }
 
-  fun scheduleDownloadIfRequired(project: Project): DownloadStatus {
+  fun obtainLanguageServerBinary(project: Project): DownloadStatus {
     val path = resolver.path()
     if (isDownloading.get()) {
       return DownloadStatus.Downloading
     }
 
+    // the path can exist because the user has specified it
     if (fileSystem.exists(path)) {
       return DownloadStatus.Downloaded(path)
     } else {

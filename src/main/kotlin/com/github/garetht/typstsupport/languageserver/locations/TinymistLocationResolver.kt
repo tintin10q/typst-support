@@ -45,7 +45,7 @@ class TinymistLocationResolver(private val project: Project) {
         is PathValidation.Failed -> {
           Notifier.warn(
             project,
-            "The specified Tinymist path is invalid: ${result.message}, falling back to automatically downloaded Tinymist."
+            "Your specified Tinymist binary is invalid: ${result.message}.\n\n Falling back to automatically downloaded Tinymist."
           )
         }
 

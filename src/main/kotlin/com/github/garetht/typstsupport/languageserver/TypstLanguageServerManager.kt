@@ -17,6 +17,8 @@ import kotlin.time.Duration.Companion.seconds
 private val LOG = logger<TypstLanguageServerManager>()
 
 class TypstLanguageServerManager {
+
+
   suspend fun initialStart(project: Project) {
     val providerClass = TypstSupportProvider::class.java
     val manager = LspServerManager.getInstance(project)

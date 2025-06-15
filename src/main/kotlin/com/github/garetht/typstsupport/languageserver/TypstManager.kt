@@ -11,10 +11,12 @@ class TypstManager(
     private val serverStarter: LspServerSupportProvider.LspServerStarter
 ) {
   fun startIfRequired() {
-    val status = lsDownloader.scheduleDownloadIfRequired(project)
+    val status = lsDownloader.obtainLanguageServerBinary(project)
 
     when (status) {
       is DownloadStatus.Downloaded -> {
+        // This is where the server actually gets started – it is provided the
+        // path to the server binary
         serverStarter.ensureServerStarted(LanguageServerDescriptor(status.path, project))
       }
       else -> {}
