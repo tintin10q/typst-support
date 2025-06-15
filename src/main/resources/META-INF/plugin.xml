@@ -35,6 +35,6 @@
                 language="TypstCode"
                 extensions="typc"/>
 
-        <projectConfigurable instance="com.github.garetht.typstsupport.configuration.TypstConfigurable" displayName="Typst Support Settings" />
+        <projectConfigurable instance="com.github.garetht.typstsupport.configuration.TypstSettingsConfigurable" displayName="Typst Support Settings" />
     </extensions>
 </idea-plugin>

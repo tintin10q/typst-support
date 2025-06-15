@@ -44,7 +44,6 @@ class TinymistLocationResolver {
               .resolve(TinymistBinary.binaryFilename)
 
       popJnaNoClassPath()
-
       return path
     }
   }
