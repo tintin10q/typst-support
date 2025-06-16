@@ -1,10 +1,10 @@
 package com.github.garetht.typstsupport.editor
 
+import com.github.garetht.typstsupport.previewserver.PreviewServerManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorState
 import com.intellij.openapi.fileEditor.FileEditorStateLevel
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
@@ -16,19 +16,22 @@ import javax.swing.JPanel
 
 private val LOG = logger<TypstPreviewEditor>()
 
-class TypstPreviewEditor(private val project: Project, private val file: VirtualFile) :
+class TypstPreviewEditor(private val file: VirtualFile, private val previewServerManager: PreviewServerManager) :
     UserDataHolderBase(), FileEditor {
 
   private val panel = JPanel(BorderLayout())
   private val browser =
       JBCefBrowser.createBuilder()
           .setOffScreenRendering(false)
-          .setUrl("http://127.0.0.1:23625/")
           .setMouseWheelEventEnable(false)
           .build()
 
   init {
     panel.add(browser.component, BorderLayout.CENTER)
+
+    previewServerManager.createServer(file.path) {
+      browser.loadURL("http://127.0.0.1:$it")
+    }
 
     browser.component.addMouseWheelListener { e ->
       // Check if Shift key is pressed

@@ -1,4 +1,4 @@
-package com.github.garetht.typstsupport.preview
+package com.github.garetht.typstsupport.previewserver
 
 import java.nio.file.Path
 
@@ -18,8 +18,8 @@ data class TinymistPreviewOptions(
   val dataPlaneHostPort: Int? = null,
   val controlPlaneHostPort: Int? = null,
 ) {
-  fun toCommandList(): List<String> {
-    val command = mutableListOf("tinymist", "preview")
+  fun toCommandList(tinymistBinaryLocation: Path): List<String> {
+    val command = mutableListOf("$tinymistBinaryLocation", "preview")
 
     if (partialRendering == true) {
       command.add("--partial-rendering")

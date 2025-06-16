@@ -1,7 +1,10 @@
-package com.github.garetht.typstsupport.preview
+package com.github.garetht.typstsupport.previewserver
 
+import com.github.garetht.typstsupport.languageserver.locations.LocationResolver
+import com.github.garetht.typstsupport.languageserver.locations.TinymistLocationResolver
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.project.Project
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -16,7 +19,12 @@ import kotlin.time.Duration.Companion.seconds
 
 private val LOG = logger<TinymistPreviewServerManager>()
 
-class TinymistPreviewServerManager : PreviewServerManager {
+class TinymistPreviewServerManager(
+  project: Project,
+  private val locationResolver: LocationResolver = TinymistLocationResolver(
+    project
+  )
+) : PreviewServerManager {
   private data class ServerInfo(
     val process: Process,
     val httpPort: Int,
@@ -28,7 +36,7 @@ class TinymistPreviewServerManager : PreviewServerManager {
 
   private val portCounter = AtomicInteger(STARTING_PORT)
 
-  override fun createServer(filename: String) {
+  override fun createServer(filename: String, callback: (port: Int) -> Unit) {
     ApplicationManager.getApplication().executeOnPooledThread {
       runBlocking {
         // If we're at max servers, remove the oldest one
@@ -45,6 +53,7 @@ class TinymistPreviewServerManager : PreviewServerManager {
           try {
             val process = startServer(filename, dataPlanePort, controlPlanePort)
             servers[filename] = ServerInfo(process, dataPlanePort, controlPlanePort)
+            callback(dataPlanePort)
           } catch (e: Exception) {
             LOG.warn(
               "Failed to start server for $filename on attempt ${attempt + 1}: ${e.message}"
@@ -96,34 +105,37 @@ class TinymistPreviewServerManager : PreviewServerManager {
     return portCounter.get() - 1
   }
 
-  private suspend fun startServer(filename: String, httpPort: Int, wsPort: Int): Process {
+  private suspend fun startServer(filename: String, dataPlanePort: Int, controlPlanePort: Int): Process {
     val options =
       TinymistPreviewOptions(
-        dataPlaneHostPort = httpPort,
-        controlPlaneHostPort = wsPort,
+        dataPlaneHostPort = dataPlanePort,
+        controlPlaneHostPort = controlPlanePort,
         openInBrowser = false // We don't want to open the browser automatically
       )
 
+    val command = options.toCommandList(locationResolver.binaryPath()) + filename
+    LOG.warn("Starting server with command: ${command.joinToString(" ")}")
     val processBuilder =
-      ProcessBuilder(options.toCommandList() + filename)
+      ProcessBuilder(command)
         .directory(File(filename).parentFile)
         .redirectErrorStream(true)
 
     val process = processBuilder.start()
 
     // Wait for server to start up
-    withTimeoutOrNull(5.seconds) {
+    withTimeoutOrNull(10.seconds) {
       while (true) {
-        if (!process.isAlive) {
-          throw RuntimeException("Server process died unexpectedly")
-        }
-
         // Check if ports are in use
-        if (isPortInUse(httpPort) && isPortInUse(wsPort)) {
+        val dataPlanePortInUse = isPortInUse(dataPlanePort)
+        val controlPlanePortInUse = isPortInUse(controlPlanePort)
+
+        LOG.warn("Checking ports: $dataPlanePortInUse, $controlPlanePortInUse")
+
+        if (dataPlanePortInUse && controlPlanePortInUse) {
           break
         }
 
-        withContext(Dispatchers.IO) { Thread.sleep(100) }
+        withContext(Dispatchers.IO) { Thread.sleep(200) }
       }
     }
       ?: throw RuntimeException("Server failed to start within timeout")

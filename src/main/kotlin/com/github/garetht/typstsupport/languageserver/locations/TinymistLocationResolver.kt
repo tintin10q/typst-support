@@ -15,7 +15,7 @@ import java.nio.file.Path
 private const val TYPST_SUPPORT_ID = "com.github.garetht.typstsupport"
 private val version = Version(0, 13, 12)
 
-class TinymistLocationResolver(private val project: Project) {
+class TinymistLocationResolver(private val project: Project): LocationResolver {
   private val jnaNoClassPathKey = "jna.noclasspath"
   private var jnaNoClassPath: String? = null
   private val pathValidator = DefaultPathValidator()
@@ -38,9 +38,9 @@ class TinymistLocationResolver(private val project: Project) {
       ?: run { System.clearProperty(jnaNoClassPathKey) }
   }
 
-  fun downloadUrl(): URI = binary.downloadUrl
+  override fun downloadUrl(): URI = binary.downloadUrl
 
-  fun binaryPath(): Path {
+  override fun binaryPath(): Path {
     if (settings.state.binarySource == BinarySource.USE_CUSTOM_BINARY) {
       when (val result = pathValidator.validateBinaryFile(settings.state.customBinaryPath)) {
         is PathValidation.Failed -> {
