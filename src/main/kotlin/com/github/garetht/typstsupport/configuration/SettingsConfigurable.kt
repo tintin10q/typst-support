@@ -1,6 +1,5 @@
 package com.github.garetht.typstsupport.configuration
 
-import com.github.garetht.typstsupport.configuration.PathValidation.Companion.validateBinaryFile
 import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
 import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
 import com.github.garetht.typstsupport.notifier.Notifier
@@ -24,30 +23,36 @@ import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
 import kotlinx.coroutines.runBlocking
+import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
 private val LOG = logger<TypstSupportProvider>()
 
-class TypstSettingsConfigurable :
+class TypstSettingsConfigurable(
+  private val pathValidator: PathValidator = DefaultPathValidator(),
+  private val executionValidator: ExecutionValidator = DefaultExecutionValidator(
+    DefaultProcessExecutor(), pathValidator,
+  ),
+  private val settings: SettingsState = SettingsState.getInstance(),
+) :
   BoundSearchableConfigurable("Typst Support Settings", "") {
 
-  // our persisted settings
-  private val settings = SettingsState.getInstance()
-
   // UI Elements
-  private lateinit var fileField: Cell<TextFieldWithBrowseButton>
-  private lateinit var customRadioButton: Cell<JBRadioButton>
-  private lateinit var testResultLabel: Cell<JLabel>
+  internal lateinit var fileField: Cell<TextFieldWithBrowseButton>
+  internal lateinit var automaticRadioButton: Cell<JBRadioButton>
+  internal lateinit var customRadioButton: Cell<JBRadioButton>
+  internal lateinit var testResultLabel: Cell<JLabel>
+  internal lateinit var testBinaryButton: Cell<JButton>
 
   // Component-internal state
-  private var binaryExecutionValidated: Boolean = false
+  internal var binaryExecutionValidated: Boolean = false
 
   override fun createPanel(): DialogPanel {
     return panel {
       buttonsGroup("Binary location") {
         row {
-          radioButton(
+          automaticRadioButton = radioButton(
             "Use automatically downloaded binary",
             BinarySource.USE_AUTOMATIC_DOWNLOAD
           )
@@ -81,7 +86,7 @@ class TypstSettingsConfigurable :
               .resizableColumn()
               .align(AlignX.FILL)
               .validationOnInput {
-                validateBinaryFile(it.text).toValidationInfo(this)
+                pathValidator.validateBinaryFile(it.text).toValidationInfo(this)
               }
               .onChanged {
                 binaryExecutionValidated = false
@@ -89,8 +94,9 @@ class TypstSettingsConfigurable :
               }
         }
 
+
         row {
-          button("Test Binary") {
+          testBinaryButton = button("Test Binary") {
             testBinaryExecution(fileField.component.text)
           }
             .enabledIf(customRadioButton.selected)
@@ -111,19 +117,22 @@ class TypstSettingsConfigurable :
   }
 
 
-  private fun testBinaryExecution(binaryPath: String) {
+  fun testBinaryExecution(binaryPath: String) {
     // Clear previous result
     this.resetTestResultLabel()
 
     // Run validation in background thread to avoid blocking UI
     ApplicationManager.getApplication().executeOnPooledThread {
-      try {
-        val result = ExecutionValidation.validateBinaryExecution(binaryPath)
+      LOG.warn("Validation result: $binaryPath")
 
+      try {
+        val result = executionValidator.validateBinaryExecution(binaryPath)
         binaryExecutionValidated = when (result) {
           is ExecutionValidation.Failed -> false
           is ExecutionValidation.Success -> true
         }
+        LOG.warn("Validation balidated: $result")
+
         // Update UI on EDT
         ApplicationManager.getApplication().invokeLater({
           updateTestResult(result)
@@ -137,6 +146,8 @@ class TypstSettingsConfigurable :
   }
 
   private fun updateTestResult(result: ExecutionValidation) {
+    LOG.warn("updating test resul balidated: $result")
+
     when (result) {
       is ExecutionValidation.Success -> {
         testResultLabel.component.icon = AllIcons.General.InspectionsOK
@@ -145,6 +156,7 @@ class TypstSettingsConfigurable :
       }
 
       is ExecutionValidation.Failed -> {
+        LOG.warn("setting test result label here: $result")
         testResultLabel.component.icon = AllIcons.General.Error
         testResultLabel.component.text = "Failed: ${result.message}"
         testResultLabel.component.foreground = JBColor.RED
@@ -155,7 +167,7 @@ class TypstSettingsConfigurable :
 
   override fun apply() {
     if (customRadioButton.selected()) {
-      val exception = validateBinaryFile(fileField.component.text)
+      val exception = pathValidator.validateBinaryFile(fileField.component.text)
         .toConfigurationException()
       if (exception != null) {
         throw exception
@@ -166,7 +178,12 @@ class TypstSettingsConfigurable :
       }
     }
 
+    LOG.warn("applying, ${settings.state.customBinaryPath}")
+    LOG.warn("applying, ${settings.state.binarySource}")
+    LOG.warn("applyinf")
     super.apply()
+    LOG.warn("applied, ${settings.state.customBinaryPath}")
+    LOG.warn("applied, ${settings.state.binarySource}")
 
     ApplicationManager.getApplication().invokeLater {
       val projectManager = ApplicationManager.getApplication().service<ProjectManager>()

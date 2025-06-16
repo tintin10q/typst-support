@@ -2,6 +2,7 @@ package com.github.garetht.typstsupport.languageserver.locations
 
 import com.github.garetht.typstsupport.configuration.BinarySource
 import com.github.garetht.typstsupport.configuration.PathValidation
+import com.github.garetht.typstsupport.configuration.DefaultPathValidator
 import com.github.garetht.typstsupport.configuration.SettingsState
 import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.ide.plugins.PluginManagerCore
@@ -17,7 +18,7 @@ private val version = Version(0, 13, 12)
 class TinymistLocationResolver(private val project: Project) {
   private val jnaNoClassPathKey = "jna.noclasspath"
   private var jnaNoClassPath: String? = null
-
+  private val pathValidator = DefaultPathValidator()
   private val settings = SettingsState.getInstance()
 
   private val binary =
@@ -41,7 +42,7 @@ class TinymistLocationResolver(private val project: Project) {
 
   fun path(): Path {
     if (settings.state.binarySource == BinarySource.USE_CUSTOM_BINARY) {
-      when (val result = PathValidation.validateBinaryFile(settings.state.customBinaryPath)) {
+      when (val result = pathValidator.validateBinaryFile(settings.state.customBinaryPath)) {
         is PathValidation.Failed -> {
           Notifier.warn(
             project,
