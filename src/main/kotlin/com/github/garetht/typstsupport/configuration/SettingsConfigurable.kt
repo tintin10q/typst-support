@@ -123,7 +123,6 @@ class TypstSettingsConfigurable(
 
     // Run validation in background thread to avoid blocking UI
     ApplicationManager.getApplication().executeOnPooledThread {
-      LOG.warn("Validation result: $binaryPath")
 
       try {
         val result = executionValidator.validateBinaryExecution(binaryPath)
@@ -131,7 +130,6 @@ class TypstSettingsConfigurable(
           is ExecutionValidation.Failed -> false
           is ExecutionValidation.Success -> true
         }
-        LOG.warn("Validation balidated: $result")
 
         // Update UI on EDT
         ApplicationManager.getApplication().invokeLater({
@@ -146,7 +144,6 @@ class TypstSettingsConfigurable(
   }
 
   private fun updateTestResult(result: ExecutionValidation) {
-    LOG.warn("updating test resul balidated: $result")
 
     when (result) {
       is ExecutionValidation.Success -> {
@@ -156,7 +153,6 @@ class TypstSettingsConfigurable(
       }
 
       is ExecutionValidation.Failed -> {
-        LOG.warn("setting test result label here: $result")
         testResultLabel.component.icon = AllIcons.General.Error
         testResultLabel.component.text = "Failed: ${result.message}"
         testResultLabel.component.foreground = JBColor.RED
@@ -178,12 +174,7 @@ class TypstSettingsConfigurable(
       }
     }
 
-    LOG.warn("applying, ${settings.state.customBinaryPath}")
-    LOG.warn("applying, ${settings.state.binarySource}")
-    LOG.warn("applyinf")
     super.apply()
-    LOG.warn("applied, ${settings.state.customBinaryPath}")
-    LOG.warn("applied, ${settings.state.binarySource}")
 
     ApplicationManager.getApplication().invokeLater {
       val projectManager = ApplicationManager.getApplication().service<ProjectManager>()
