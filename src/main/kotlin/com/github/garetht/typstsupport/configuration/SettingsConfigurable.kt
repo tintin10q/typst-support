@@ -4,7 +4,6 @@ import com.github.garetht.typstsupport.configuration.PathValidation.Companion.va
 import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
 import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
 import com.github.garetht.typstsupport.notifier.Notifier
-import com.intellij.application.options.MLCodeCompletionConfigurableEP.providerClass
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState

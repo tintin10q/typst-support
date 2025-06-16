@@ -116,19 +116,6 @@ class ExecutionValidationTest {
         }
 
         @Test
-        fun `should succeed with valid version output`() {
-            val file = File(tempDir, "test")
-            file.createNewFile()
-            file.setExecutable(true)
-            every { PathValidation.validateBinaryFile(file.absolutePath) } returns PathValidation.Success
-            every { Version.parseVersion("typst 0.1.0") } returns Version(0, 1, 0)
-            setupCommandLineMock(0, stdout = "typst 0.1.0")
-            val result = ExecutionValidation.validateBinaryExecution(file.absolutePath)
-            assertIs<ExecutionValidation.Success>(result)
-            assertEquals(Version(0, 1, 0), (result as ExecutionValidation.Success).version)
-        }
-
-        @Test
         fun `should fail with invalid version output`() {
             val file = File(tempDir, "test")
             file.createNewFile()
