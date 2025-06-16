@@ -31,8 +31,13 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more:
 // https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
-  testImplementation(libs.junit)
+  testImplementation(libs.junitVintageEngine)
+  testImplementation(libs.jupiter)
+  testImplementation(libs.jupiterParams)
+  testImplementation(libs.mockk)
+  testImplementation(libs.systemLambda)
   testImplementation(libs.opentest4j)
+  testImplementation(kotlin("test"))
 
   implementation(libs.appdirs)
   implementation(libs.commonsCompress)
@@ -133,6 +138,13 @@ tasks {
   wrapper { gradleVersion = providers.gradleProperty("gradleVersion").get() }
 
   publishPlugin { dependsOn(patchChangelog) }
+
+  test {
+    useJUnitPlatform()
+    testLogging {
+      events("PASSED", "SKIPPED", "FAILED")
+    }
+  }
 }
 
 intellijPlatformTesting {
@@ -153,3 +165,4 @@ intellijPlatformTesting {
     }
   }
 }
+

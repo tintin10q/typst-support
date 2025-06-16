@@ -4,7 +4,7 @@ import com.github.garetht.typstsupport.TypstIcons
 import com.github.garetht.typstsupport.configuration.TypstSettingsConfigurable
 import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloadScheduler
 import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloader
-import com.github.garetht.typstsupport.languageserver.downloader.TypstPluginFileSystem
+import com.github.garetht.typstsupport.languageserver.downloader.Filesystem
 import com.github.garetht.typstsupport.languageserver.locations.TinymistLocationResolver
 import com.github.garetht.typstsupport.languageserver.locations.isSupportedTypstFileType
 import com.intellij.openapi.diagnostic.logger
@@ -31,7 +31,7 @@ class TypstSupportProvider : LspServerSupportProvider {
     val downloadScheduler = TinymistDownloadScheduler(
       TinymistLocationResolver(project),
       TinymistDownloader(),
-      TypstPluginFileSystem(),
+      Filesystem(),
       TypstLanguageServerManager(),
     )
 

@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class TinymistDownloadScheduler(
   private val resolver: TinymistLocationResolver,
   private val downloader: TinymistDownloader,
-  private val fileSystem: TypstPluginFileSystem,
+  private val fileSystem: Filesystem,
   private val languageServerManager: TypstLanguageServerManager
 ) {
 

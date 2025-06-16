@@ -8,7 +8,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.getPosixFilePermissions
 import kotlin.io.path.setPosixFilePermissions
 
-class TypstPluginFileSystem {
+class Filesystem {
   fun exists(path: Path): Boolean = path.exists()
 
   fun createDirectories(path: Path): Path? = Files.createDirectories(path)

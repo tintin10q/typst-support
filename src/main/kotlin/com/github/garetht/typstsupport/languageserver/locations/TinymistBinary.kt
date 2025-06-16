@@ -19,7 +19,9 @@ data class TinymistBinary(
         URI(
             "https://github.com/Myriad-Dreamin/tinymist/releases/download/$versionPath/$compressedFilename")
 
-  companion object {
-    val binaryFilename = Path("tinymist")
+
+  val binaryFilename = when (osName) {
+    OsName.Mac, OsName.Linux -> Path("tinymist")
+    OsName.Windows -> Path("tinymist.exe")
   }
 }

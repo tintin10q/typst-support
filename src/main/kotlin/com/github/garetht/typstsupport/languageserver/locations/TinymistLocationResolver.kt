@@ -61,7 +61,7 @@ class TinymistLocationResolver(private val project: Project) {
         Path.of(appDirs.getUserDataDir("TypstSupport", null, "com.github.garetht.typstsupport"))
           .resolve("language-server")
           .resolve(binary.versionPath)
-          .resolve(TinymistBinary.binaryFilename)
+          .resolve(binary.binaryFilename)
 
       popJnaNoClassPath()
       return path

@@ -1,6 +1,5 @@
 package com.github.garetht.typstsupport.languageserver.downloader
 
-import com.github.garetht.typstsupport.languageserver.locations.TinymistBinary
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
@@ -22,57 +21,57 @@ private val LOG = logger<TinymistDownloader>()
 
 class TinymistDownloader {
   suspend fun download(project: Project, uri: URI, path: Path) =
-      withBackgroundProgress(
-          project,
-          title = "TypstSupport",
-          cancellable = true,
-      ) {
-        val readBuffer = ByteArray(4096)
-        var readLen: Int
-        val destination = path.parent
+    withBackgroundProgress(
+      project,
+      title = "TypstSupport",
+      cancellable = true,
+    ) {
+      val readBuffer = ByteArray(4096)
+      var readLen: Int
+      val destination = path.parent
 
-        LOG.warn("Downloading Tinymist from $uri")
+      LOG.warn("Downloading Tinymist from $uri")
 
-        reportSequentialProgress(1) { reporter ->
-          reporter.indeterminateStep("Checking Tinymist Language Server...")
+      reportSequentialProgress(1) { reporter ->
+        reporter.indeterminateStep("Checking Tinymist Language Server...")
 
-          val archiveInputStream = createArchiveInputStream(uri)
+        val archiveInputStream = createArchiveInputStream(uri)
 
-          archiveInputStream?.use { stream ->
-            var entry: ArchiveEntry?
-            while (stream.nextEntry.also { entry = it } != null) {
-              val currentEntry = entry!!
+        archiveInputStream?.use { stream ->
+          var entry: ArchiveEntry?
+          while (stream.nextEntry.also { entry = it } != null) {
+            val currentEntry = entry!!
 
-              // Skip directories
-              if (currentEntry.isDirectory) {
-                continue
-              }
+            // Skip directories
+            if (currentEntry.isDirectory) {
+              continue
+            }
 
-              // Extract to fixed path: just "tinymist" in the destination directory
-              val extractedFile = destination.resolve(TinymistBinary.binaryFilename).toFile()
-              val tempFile = File(extractedFile.path + ".tmp")
+            // Extract to fixed path: just "tinymist" in the destination directory
+            val extractedFile = destination.resolve(path.fileName).toFile()
+            val tempFile = File(extractedFile.path + ".tmp")
 
-              LOG.warn("Extracting `${currentEntry.name}` to `${extractedFile.path}`")
-              reporter.itemStep("Downloading ${currentEntry.name}...") {
-                val estimatedSize = currentEntry.size.toInt()
+            LOG.warn("Extracting `${currentEntry.name}` to `${extractedFile.path}`")
+            reporter.itemStep("Downloading ${currentEntry.name}...") {
+              val estimatedSize = currentEntry.size.toInt()
 
-                reportSequentialProgress(estimatedSize) { innerReporter ->
-                  FileOutputStream(tempFile).use { outputStream ->
-                    while (stream.read(readBuffer).also { readLen = it } != -1) {
-                      ensureActive()
-                      innerReporter.sizedStep(readLen)
-                      outputStream.write(readBuffer, 0, readLen)
-                    }
+              reportSequentialProgress(estimatedSize) { innerReporter ->
+                FileOutputStream(tempFile).use { outputStream ->
+                  while (stream.read(readBuffer).also { readLen = it } != -1) {
+                    ensureActive()
+                    innerReporter.sizedStep(readLen)
+                    outputStream.write(readBuffer, 0, readLen)
                   }
-                  Files.move(tempFile.toPath(), extractedFile.toPath())
                 }
+                Files.move(tempFile.toPath(), extractedFile.toPath())
               }
             }
           }
         }
-
-        LOG.warn("Tinymist downloaded and extracted.")
       }
+
+      LOG.warn("Tinymist downloaded and extracted.")
+    }
 
   private fun createArchiveInputStream(uri: URI): ArchiveInputStream<*>? {
     val inputStream = BufferedInputStream(uri.toURL().openStream())
@@ -82,12 +81,15 @@ class TinymistDownloader {
       uriString.endsWith(".zip") -> {
         ZipArchiveInputStream(inputStream)
       }
+
       uriString.endsWith(".tar.gz") || uriString.endsWith(".tgz") -> {
         TarArchiveInputStream(GzipCompressorInputStream(inputStream))
       }
+
       uriString.endsWith(".tar") -> {
         TarArchiveInputStream(inputStream)
       }
+
       else -> {
         LOG.error("Tinymist archive was not in a recognized format.")
         null
