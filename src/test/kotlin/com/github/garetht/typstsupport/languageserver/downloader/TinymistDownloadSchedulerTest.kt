@@ -72,7 +72,7 @@ class TinymistDownloadSchedulerTest {
     }
     val lsUrl = mockk<URI>()
     val resolver = mockk<TinymistLocationResolver> {
-      every { path() } returns lsPath
+      every { binaryPath() } returns lsPath
       every { downloadUrl() } returns lsUrl
     }
     val downloader = mockk<TinymistDownloader>(relaxed = true)

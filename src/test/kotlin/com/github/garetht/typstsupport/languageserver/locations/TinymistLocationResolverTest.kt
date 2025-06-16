@@ -64,7 +64,7 @@ class TinymistLocationResolverTest {
 
 
       val resolver = TinymistLocationResolver(getMockedProject())
-      resolver.path()
+      resolver.binaryPath()
 
       Assertions.assertEquals(System.getProperty("jna.noclasspath"), "true")
     }
@@ -82,7 +82,7 @@ class TinymistLocationResolverTest {
         }
       }
       val resolver = TinymistLocationResolver(getMockedProject())
-      resolver.path()
+      resolver.binaryPath()
 
       Assertions.assertEquals(System.getProperty("jna.noclasspath"), null)
     }
@@ -106,7 +106,7 @@ class TinymistLocationResolverTest {
 
       val resolver = TinymistLocationResolver(getMockedProject())
 
-      val path = resolver.path()
+      val path = resolver.binaryPath()
 
       Assertions.assertEquals(Path.of(expectedPath), path)
     }

@@ -1,8 +1,8 @@
 package com.github.garetht.typstsupport.languageserver.locations
 
 import com.github.garetht.typstsupport.configuration.BinarySource
-import com.github.garetht.typstsupport.configuration.PathValidation
 import com.github.garetht.typstsupport.configuration.DefaultPathValidator
+import com.github.garetht.typstsupport.configuration.PathValidation
 import com.github.garetht.typstsupport.configuration.SettingsState
 import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.ide.plugins.PluginManagerCore
@@ -40,13 +40,13 @@ class TinymistLocationResolver(private val project: Project) {
 
   fun downloadUrl(): URI = binary.downloadUrl
 
-  fun path(): Path {
+  fun binaryPath(): Path {
     if (settings.state.binarySource == BinarySource.USE_CUSTOM_BINARY) {
       when (val result = pathValidator.validateBinaryFile(settings.state.customBinaryPath)) {
         is PathValidation.Failed -> {
           Notifier.warn(
             project,
-            "Your specified Tinymist binary is invalid: ${result.message}.\n\n Falling back to automatically downloaded Tinymist."
+            "Your specified Tinymist binary (${settings.state.customBinaryPath}) is invalid: ${result.message}.\n\n Falling back to automatically downloaded Tinymist."
           )
         }
 

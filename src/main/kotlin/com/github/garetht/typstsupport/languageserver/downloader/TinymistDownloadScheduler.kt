@@ -34,7 +34,7 @@ class TinymistDownloadScheduler(
   }
 
   fun obtainLanguageServerBinary(project: Project): DownloadStatus {
-    val path = resolver.path()
+    val path = resolver.binaryPath()
     if (isDownloading.get()) {
       return DownloadStatus.Downloading
     }
