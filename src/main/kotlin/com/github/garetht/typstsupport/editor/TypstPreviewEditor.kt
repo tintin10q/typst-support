@@ -1,6 +1,7 @@
 package com.github.garetht.typstsupport.editor
 
 import com.github.garetht.typstsupport.previewserver.PreviewServerManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorState
@@ -8,30 +9,81 @@ import com.intellij.openapi.fileEditor.FileEditorStateLevel
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
+import org.cef.browser.CefBrowser
+import org.cef.browser.CefFrame
+import org.cef.handler.CefLoadHandler
+import org.cef.network.CefRequest
 import java.awt.BorderLayout
+import java.awt.CardLayout
 import java.awt.event.InputEvent
 import java.beans.PropertyChangeListener
 import javax.swing.JComponent
+import javax.swing.JLabel
 import javax.swing.JPanel
+import javax.swing.SwingConstants
 
 private val LOG = logger<TypstPreviewEditor>()
 
-class TypstPreviewEditor(private val file: VirtualFile, private val previewServerManager: PreviewServerManager) :
-    UserDataHolderBase(), FileEditor {
+class TypstPreviewEditor(private val file: VirtualFile, previewServerManager: PreviewServerManager) :
+  UserDataHolderBase(), FileEditor {
 
   private val panel = JPanel(BorderLayout())
   private val browser =
-      JBCefBrowser.createBuilder()
-          .setOffScreenRendering(false)
-          .setMouseWheelEventEnable(false)
-          .build()
+    JBCefBrowser.createBuilder()
+      .setMouseWheelEventEnable(false)
+      .build()
+  private val cardLayout = CardLayout()
+  private val containerPanel = JPanel(cardLayout)
+  private val loadingPanel = JPanel(BorderLayout()).apply {
+    add(JLabel("Loading preview...", SwingConstants.CENTER), BorderLayout.CENTER)
+  }
 
   init {
-    panel.add(browser.component, BorderLayout.CENTER)
+    containerPanel.add(browser.component, "browser")
+    containerPanel.add(loadingPanel, "loading")
+    panel.add(containerPanel, BorderLayout.CENTER)
+
+    cardLayout.show(containerPanel, "loading")
 
     previewServerManager.createServer(file.path) {
-      browser.loadURL("http://127.0.0.1:$it")
+      ApplicationManager.getApplication().invokeLater {
+        LOG.warn("Attempting to start the preview loader on port $it")
+        browser.loadURL("http://127.0.0.1:$it")
+        LOG.warn("Did to start the preview loader on port $it")
+      }
     }
+
+    browser.jbCefClient.addLoadHandler(object : CefLoadHandler {
+      override fun onLoadingStateChange(
+        p0: CefBrowser?,
+        p1: Boolean,
+        p2: Boolean,
+        p3: Boolean
+      ) = Unit
+
+      override fun onLoadStart(
+        p0: CefBrowser?,
+        p1: CefFrame?,
+        p2: CefRequest.TransitionType?
+      ) = Unit
+
+      override fun onLoadEnd(browser: CefBrowser?, frame: CefFrame?, httpStatusCode: Int) {
+        LOG.warn("Load ended with status: $httpStatusCode for: ${frame?.url}")
+        if (frame?.isMain == true) {
+          ApplicationManager.getApplication().invokeLater {
+            cardLayout.show(containerPanel, "browser")
+          }
+        }
+      }
+
+      override fun onLoadError(
+        browser: CefBrowser?,
+        frame: CefFrame?,
+        errorCode: CefLoadHandler.ErrorCode?,
+        errorText: String?,
+        failedUrl: String?
+      ) = Unit
+    }, browser.cefBrowser)
 
     browser.component.addMouseWheelListener { e ->
       // Check if Shift key is pressed
@@ -42,17 +94,17 @@ class TypstPreviewEditor(private val file: VirtualFile, private val previewServe
 
       // Convert to horizontal scroll if Shift is pressed, otherwise vertical
       val deltaX =
-          if (isShiftPressed) {
-            scrollDelta
-          } else {
-            0.0
-          }
+        if (isShiftPressed) {
+          scrollDelta
+        } else {
+          0.0
+        }
       val deltaY =
-          if (isShiftPressed) {
-            0.0
-          } else {
-            scrollDelta
-          }
+        if (isShiftPressed) {
+          0.0
+        } else {
+          scrollDelta
+        }
 
       transmitScrollToPage(deltaX, deltaY)
     }
@@ -60,7 +112,7 @@ class TypstPreviewEditor(private val file: VirtualFile, private val previewServe
 
   private fun transmitScrollToPage(deltaX: Double, deltaY: Double) {
     val scrollScript =
-        """
+      """
     (function() {
       // Create and dispatch a wheel event
       var wheelEvent = new WheelEvent('wheel', {
@@ -80,7 +132,7 @@ class TypstPreviewEditor(private val file: VirtualFile, private val previewServe
       window.scrollBy($deltaX, $deltaY);
     })();
   """
-            .trimIndent()
+        .trimIndent()
 
     browser.cefBrowser.executeJavaScript(scrollScript, "", 0)
   }
@@ -91,7 +143,7 @@ class TypstPreviewEditor(private val file: VirtualFile, private val previewServe
 
   override fun getName(): String = "Preview"
 
-  override fun setState(state: FileEditorState) {}
+  override fun setState(state: FileEditorState) = Unit
 
   override fun getState(level: FileEditorStateLevel): FileEditorState = FileEditorState.INSTANCE
 

@@ -2,10 +2,13 @@ package com.github.garetht.typstsupport.notifier
 
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 
 object Notifier {
-  private fun notify(project: Project, message: String, level: NotificationType) {
+  private fun notify(message: String, level: NotificationType) {
+    val project = ProjectManager.getInstance().openProjects.firstOrNull()
+      ?: ProjectManager.getInstance().defaultProject
+
     val manager = NotificationGroupManager.getInstance()
     manager.getNotificationGroup(NOTIFICATION_GROUP_ID)
       .createNotification(
@@ -15,8 +18,8 @@ object Notifier {
       .notify(project)
   }
 
-  fun warn(project: Project, message: String) = notify(project, message, NotificationType.WARNING)
-  fun info(project: Project, message: String) = notify(project, message, NotificationType.INFORMATION)
+  fun warn(message: String) = notify(message, NotificationType.WARNING)
+  fun info(message: String) = notify(message, NotificationType.INFORMATION)
 
   private const val NOTIFICATION_GROUP_ID = "TypstSupport"
 }

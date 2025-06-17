@@ -52,7 +52,7 @@ class TinymistDownloadScheduler(
             isDownloading.set(false)
             languageServerManager.initialStart(project)
           } catch (ce: CancellationException) {
-            Notifier.warn(project, DOWNLOAD_CANCELLED_MSG)
+            Notifier.warn(DOWNLOAD_CANCELLED_MSG)
             throw ce
           }
         }

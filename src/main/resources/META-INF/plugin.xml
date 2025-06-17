@@ -35,7 +35,8 @@
                 language="TypstCode"
                 extensions="typc"/>
 
-        <applicationConfigurable instance="com.github.garetht.typstsupport.configuration.TypstSettingsConfigurable" displayName="Typst Support Settings" />
+        <applicationConfigurable instance="com.github.garetht.typstsupport.configuration.TypstSettingsConfigurable"
+                                 displayName="Typst Support Settings"/>
 
         <applicationService serviceImplementation="com.github.garetht.typstsupport.configuration.SettingsState"/>
     </extensions>

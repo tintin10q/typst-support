@@ -14,12 +14,13 @@ class Filesystem {
   fun createDirectories(path: Path): Path? = Files.createDirectories(path)
 
   private fun isPosix(): Boolean =
-      FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
+    FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
 
   fun setExecutable(path: Path): Path {
     if (isPosix()) {
       path.setPosixFilePermissions(
-          path.getPosixFilePermissions().plus(PosixFilePermission.OWNER_EXECUTE))
+        path.getPosixFilePermissions().plus(PosixFilePermission.OWNER_EXECUTE)
+      )
     }
     return path
   }

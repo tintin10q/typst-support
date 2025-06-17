@@ -15,7 +15,7 @@ data class Version(val major: Int, val minor: Int, val patch: Int) {
     fun parseVersion(output: String): Version? {
       // Pattern to match "tinymist X.Y.Z" format
       val pattern =
-          Pattern.compile("tinymist\\s+(\\d+)\\.(\\d+)\\.(\\d+)", Pattern.CASE_INSENSITIVE)
+        Pattern.compile("tinymist\\s+(\\d+)\\.(\\d+)\\.(\\d+)", Pattern.CASE_INSENSITIVE)
       val matcher = pattern.matcher(output)
 
       return if (matcher.find()) {

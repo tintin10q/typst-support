@@ -9,11 +9,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import javax.swing.JComponent
 
 class TypstSplitEditor(project: Project, file: VirtualFile) :
-    TextEditorWithPreview(
-        TextEditorProvider.getInstance().createEditor(project, file) as TextEditor,
-        TypstPreviewEditor(file, TinymistPreviewServerManager(project)),
-        "TypstSplitEditor",
-    ) {
+  TextEditorWithPreview(
+    TextEditorProvider.getInstance().createEditor(project, file) as TextEditor,
+    TypstPreviewEditor(file, TinymistPreviewServerManager.getInstance()),
+    "TypstSplitEditor",
+  ) {
 
   override fun getComponent(): JComponent {
     return super.getComponent()

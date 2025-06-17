@@ -8,9 +8,9 @@ import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
 import java.nio.file.Path
 
 class LanguageServerDescriptor(val languageServerPath: Path, project: Project) :
-    ProjectWideLspServerDescriptor(project, "") {
+  ProjectWideLspServerDescriptor(project, "") {
   override fun createCommandLine(): GeneralCommandLine =
-      GeneralCommandLine(languageServerPath.toString())
+    GeneralCommandLine(languageServerPath.toString())
 
   override fun isSupportedFile(file: VirtualFile): Boolean = file.isSupportedTypstFileType()
 }

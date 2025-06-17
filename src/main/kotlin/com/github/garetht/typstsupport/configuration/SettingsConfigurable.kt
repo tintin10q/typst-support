@@ -187,7 +187,7 @@ class TypstSettingsConfigurable(
               return@runBlocking
             }
             manager.initialStart(project)
-            Notifier.info(project, "Restarting Tinymist server...")
+            Notifier.info("Restarting Tinymist server...")
           }
         }
       }

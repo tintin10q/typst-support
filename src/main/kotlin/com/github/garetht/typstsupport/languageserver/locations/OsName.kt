@@ -17,6 +17,7 @@ enum class OsName {
     return when (this) {
       Mac,
       Linux -> "tar.gz"
+
       Windows -> "zip"
     }
   }

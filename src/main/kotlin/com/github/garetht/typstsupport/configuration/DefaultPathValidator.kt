@@ -2,7 +2,7 @@ package com.github.garetht.typstsupport.configuration
 
 import java.io.File
 
-class DefaultPathValidator: PathValidator {
+class DefaultPathValidator : PathValidator {
   override fun validateBinaryFile(binaryPath: String): PathValidation {
     if (binaryPath.isEmpty()) {
       return PathValidation.Failed("Binary path is empty")

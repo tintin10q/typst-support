@@ -1,6 +1,5 @@
 package com.github.garetht.typstsupport.languageserver.locations
 
-import com.github.garetht.typstsupport.getMockedProject
 import com.github.garetht.typstsupport.mockIntelliJEnvironment
 import com.github.stefanbirkner.systemlambda.SystemLambda.restoreSystemProperties
 import io.mockk.unmockkAll
@@ -39,7 +38,7 @@ class TinymistLocationResolverTest {
         }
       }
 
-      val resolver = TinymistLocationResolver(getMockedProject())
+      val resolver = TinymistLocationResolver()
 
       val url = resolver.downloadUrl()
 
@@ -63,7 +62,7 @@ class TinymistLocationResolverTest {
       }
 
 
-      val resolver = TinymistLocationResolver(getMockedProject())
+      val resolver = TinymistLocationResolver()
       resolver.binaryPath()
 
       Assertions.assertEquals(System.getProperty("jna.noclasspath"), "true")
@@ -81,7 +80,7 @@ class TinymistLocationResolverTest {
           this.userDataDir = ""
         }
       }
-      val resolver = TinymistLocationResolver(getMockedProject())
+      val resolver = TinymistLocationResolver()
       resolver.binaryPath()
 
       Assertions.assertEquals(System.getProperty("jna.noclasspath"), null)
@@ -104,7 +103,7 @@ class TinymistLocationResolverTest {
         }
       }
 
-      val resolver = TinymistLocationResolver(getMockedProject())
+      val resolver = TinymistLocationResolver()
 
       val path = resolver.binaryPath()
 
@@ -146,7 +145,7 @@ class TinymistLocationResolverTest {
         platformId = "apple-darwin",
         downloadExtension = ".tar.gz",
 
-      ),
+        ),
       OperatingSystem(
         osNameProperty = UUID.randomUUID().toString(),
         platformId = "unknown-linux-gnu",

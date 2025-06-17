@@ -16,8 +16,9 @@ class MyToolWindowFactory : ToolWindowFactory {
 
   init {
     thisLogger()
-        .warn(
-            "Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
+      .warn(
+        "Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`."
+      )
   }
 
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -33,16 +34,16 @@ class MyToolWindowFactory : ToolWindowFactory {
     private val service = toolWindow.project.service<MyProjectService>()
 
     fun getContent() =
-        JBPanel<JBPanel<*>>().apply {
-          val label = JBLabel(MyBundle.message("randomLabel", "?"))
+      JBPanel<JBPanel<*>>().apply {
+        val label = JBLabel(MyBundle.message("randomLabel", "?"))
 
-          add(label)
-          add(
-              JButton(MyBundle.message("shuffle")).apply {
-                addActionListener {
-                  label.text = MyBundle.message("randomLabel", service.getRandomNumber())
-                }
-              })
-        }
+        add(label)
+        add(
+          JButton(MyBundle.message("shuffle")).apply {
+            addActionListener {
+              label.text = MyBundle.message("randomLabel", service.getRandomNumber())
+            }
+          })
+      }
   }
 }

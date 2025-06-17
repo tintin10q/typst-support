@@ -6,9 +6,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.platform.lsp.api.LspServerSupportProvider
 
 class TypstManager(
-    private val lsDownloader: TinymistDownloadScheduler,
-    val project: Project,
-    private val serverStarter: LspServerSupportProvider.LspServerStarter
+  private val lsDownloader: TinymistDownloadScheduler,
+  val project: Project,
+  private val serverStarter: LspServerSupportProvider.LspServerStarter
 ) {
   fun startIfRequired() {
     val status = lsDownloader.obtainLanguageServerBinary(project)
@@ -19,6 +19,7 @@ class TypstManager(
         // path to the server binary
         serverStarter.ensureServerStarted(LanguageServerDescriptor(status.path, project))
       }
+
       else -> {}
     }
   }

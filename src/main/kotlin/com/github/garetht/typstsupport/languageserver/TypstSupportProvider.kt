@@ -2,9 +2,9 @@ package com.github.garetht.typstsupport.languageserver
 
 import com.github.garetht.typstsupport.TypstIcons
 import com.github.garetht.typstsupport.configuration.TypstSettingsConfigurable
+import com.github.garetht.typstsupport.languageserver.downloader.Filesystem
 import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloadScheduler
 import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloader
-import com.github.garetht.typstsupport.languageserver.downloader.Filesystem
 import com.github.garetht.typstsupport.languageserver.locations.TinymistLocationResolver
 import com.github.garetht.typstsupport.languageserver.locations.isSupportedTypstFileType
 import com.intellij.openapi.diagnostic.logger
@@ -18,6 +18,14 @@ import com.intellij.platform.lsp.api.lsWidget.LspServerWidgetItem
 private val LOG = logger<TypstSupportProvider>()
 
 class TypstSupportProvider : LspServerSupportProvider {
+  private val downloadScheduler by lazy {
+    TinymistDownloadScheduler(
+      TinymistLocationResolver(),
+      TinymistDownloader(),
+      Filesystem(),
+      TypstLanguageServerManager()
+    )
+  }
 
   override fun fileOpened(
     project: Project,
@@ -27,13 +35,6 @@ class TypstSupportProvider : LspServerSupportProvider {
     if (!file.isSupportedTypstFileType()) {
       return
     }
-
-    val downloadScheduler = TinymistDownloadScheduler(
-      TinymistLocationResolver(project),
-      TinymistDownloader(),
-      Filesystem(),
-      TypstLanguageServerManager(),
-    )
 
     TypstManager(downloadScheduler, project, serverStarter).startIfRequired()
   }

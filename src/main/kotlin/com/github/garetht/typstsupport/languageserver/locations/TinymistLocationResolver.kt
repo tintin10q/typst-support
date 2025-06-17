@@ -7,7 +7,6 @@ import com.github.garetht.typstsupport.configuration.SettingsState
 import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
-import com.intellij.openapi.project.Project
 import net.harawata.appdirs.AppDirsFactory
 import java.net.URI
 import java.nio.file.Path
@@ -15,11 +14,10 @@ import java.nio.file.Path
 private const val TYPST_SUPPORT_ID = "com.github.garetht.typstsupport"
 private val version = Version(0, 13, 12)
 
-class TinymistLocationResolver(private val project: Project): LocationResolver {
+class TinymistLocationResolver : LocationResolver {
   private val jnaNoClassPathKey = "jna.noclasspath"
   private var jnaNoClassPath: String? = null
   private val pathValidator = DefaultPathValidator()
-  private val settings = SettingsState.getInstance()
 
   private val binary =
     TinymistBinary(
@@ -41,11 +39,11 @@ class TinymistLocationResolver(private val project: Project): LocationResolver {
   override fun downloadUrl(): URI = binary.downloadUrl
 
   override fun binaryPath(): Path {
+    val settings = SettingsState.getInstance()
     if (settings.state.binarySource == BinarySource.USE_CUSTOM_BINARY) {
       when (val result = pathValidator.validateBinaryFile(settings.state.customBinaryPath)) {
         is PathValidation.Failed -> {
           Notifier.warn(
-            project,
             "Your specified Tinymist binary (${settings.state.customBinaryPath}) is invalid: ${result.message}.\n\n Falling back to automatically downloaded Tinymist."
           )
         }

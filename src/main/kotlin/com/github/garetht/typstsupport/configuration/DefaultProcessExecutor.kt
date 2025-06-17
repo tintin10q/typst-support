@@ -5,8 +5,8 @@ import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.execution.process.ProcessOutput
 
 class DefaultProcessExecutor : ProcessExecutor {
-    override fun executeProcess(commandLine: GeneralCommandLine): ProcessOutput {
-        val processHandler = CapturingProcessHandler(commandLine)
-        return processHandler.runProcess(10000)
-    }
+  override fun executeProcess(commandLine: GeneralCommandLine): ProcessOutput {
+    val processHandler = CapturingProcessHandler(commandLine)
+    return processHandler.runProcess(10000)
+  }
 }
