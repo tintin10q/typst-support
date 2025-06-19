@@ -1,6 +1,5 @@
 package com.github.garetht.typstsupport.previewserver
 
-import com.intellij.openapi.vfs.VirtualFile
 import java.nio.file.Path
 import java.util.UUID
 

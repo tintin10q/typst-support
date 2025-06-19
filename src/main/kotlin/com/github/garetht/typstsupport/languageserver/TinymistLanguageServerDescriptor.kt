@@ -4,14 +4,11 @@ import com.github.garetht.typstsupport.configuration.SettingsState
 import com.github.garetht.typstsupport.languageserver.locations.isSupportedTypstFileType
 import com.google.gson.JsonObject
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
 import com.intellij.platform.lsp.api.customization.LspFormattingSupport
 import java.nio.file.Path
-
-private val LOG = logger<TinymistLanguageServerDescriptor>()
 
 class TinymistLanguageServerDescriptor(val languageServerPath: Path, project: Project) :
   ProjectWideLspServerDescriptor(project, "") {

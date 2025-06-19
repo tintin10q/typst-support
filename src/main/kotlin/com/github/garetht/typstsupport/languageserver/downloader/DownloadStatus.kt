@@ -9,5 +9,4 @@ sealed interface DownloadStatus {
 
   data object Downloading : DownloadStatus
 
-  data object Failed : DownloadStatus
 }

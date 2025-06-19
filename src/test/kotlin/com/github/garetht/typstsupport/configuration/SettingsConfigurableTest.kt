@@ -39,7 +39,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
 
   fun testPanelInitializesWithCorrectDefaultState() {
     val settings = SettingsState()
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       mockk(),
       mockk(),
       settings,
@@ -58,7 +58,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
     settings.state.customBinaryPath = "/path/to/binary"
     settings.state.binarySource = BinarySource.USE_CUSTOM_BINARY
 
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       mockk(),
       mockk(),
       settings,
@@ -72,7 +72,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
 
   fun testSwitchingToCustomBinaryResetsValidationAndLabel() {
     val settings = SettingsState()
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       mockk(),
       mockk(),
       settings,
@@ -92,7 +92,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
 
   fun testSwitchingToAutomaticDownloadDisablesFileField() {
     val settings = SettingsState()
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       mockk(),
       mockk(),
       settings,
@@ -110,7 +110,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
   fun testCustomBinaryPathValidationFailsWhenPathIsIncorrect() {
     val settings = SettingsState()
     val failureMessage = "Path not a binary"
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       object : PathValidator {
         override fun validateBinaryFile(binaryPath: String): PathValidation =
           PathValidation.Success
@@ -140,7 +140,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
   fun testCustomBinaryPathValidationSucceedsWithCorrectPath() {
     val settings = SettingsState()
     val version = Version(1, 2, 3)
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       object : PathValidator {
         override fun validateBinaryFile(binaryPath: String): PathValidation =
           PathValidation.Success
@@ -170,7 +170,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
 
   fun testApplyThrowsConfigurationExceptionWhenCustomBinaryIsNotValidated() {
     val settings = SettingsState()
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       object : PathValidator {
         override fun validateBinaryFile(binaryPath: String): PathValidation = PathValidation.Success
       },
@@ -194,7 +194,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
 
   fun testApplySucceedsWhenCustomBinaryIsValidated() {
     val settings = SettingsState()
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       object : PathValidator {
         override fun validateBinaryFile(binaryPath: String): PathValidation =
           PathValidation.Success
@@ -216,7 +216,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
 
   fun testApplySucceedsWithAutomaticDownloadSelected() {
     val settings = SettingsState()
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       mockk(),
       mockk(),
       settings,
@@ -239,7 +239,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
   fun testHandlesValidationErrorDuringBinaryTest() {
     val settings = SettingsState()
     val errorMessage = "Unexpected error during validation"
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       object : PathValidator {
         override fun validateBinaryFile(binaryPath: String): PathValidation =
           PathValidation.Success
@@ -274,7 +274,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
   fun testHandlesValidationErrorWhenApplyingInvalidly() {
     val settings = SettingsState()
     val errorMessage = "Invalid binary path"
-    val configurable = TypstSettingsConfigurable(
+    val configurable = SettingsConfigurable(
       object : PathValidator {
         override fun validateBinaryFile(binaryPath: String): PathValidation =
           PathValidation.Failed(errorMessage)

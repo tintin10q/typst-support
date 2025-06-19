@@ -6,7 +6,6 @@ import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloa
 import com.github.garetht.typstsupport.mockIntelliJEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.platform.lsp.api.LspServerSupportProvider
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll

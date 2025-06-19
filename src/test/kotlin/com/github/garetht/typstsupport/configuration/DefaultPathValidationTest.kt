@@ -139,12 +139,12 @@ class DefaultPathValidationTest {
 
     @Test
     fun `should return ValidationInfo for Failed case`() {
-      every { validationInfoBuilder.error("test error") } returns validationInfo
+      every { validationInfoBuilder.error("Test error") } returns validationInfo
 
-      val result = PathValidation.Failed("test error").toValidationInfo(validationInfoBuilder)
+      val result = PathValidation.Failed("Test error").toValidationInfo(validationInfoBuilder)
 
       assertEquals(validationInfo, result)
-      verify { validationInfoBuilder.error("test error") }
+      verify { validationInfoBuilder.error("Test error") }
     }
 
     @Test

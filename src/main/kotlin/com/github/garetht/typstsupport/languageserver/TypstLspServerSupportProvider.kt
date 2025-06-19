@@ -1,7 +1,7 @@
 package com.github.garetht.typstsupport.languageserver
 
 import com.github.garetht.typstsupport.TypstIcons
-import com.github.garetht.typstsupport.configuration.TypstSettingsConfigurable
+import com.github.garetht.typstsupport.configuration.SettingsConfigurable
 import com.github.garetht.typstsupport.languageserver.downloader.Filesystem
 import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloadScheduler
 import com.github.garetht.typstsupport.languageserver.downloader.TinymistDownloader
@@ -47,7 +47,7 @@ class TypstLspServerSupportProvider : LspServerSupportProvider {
       lspServer,
       currentFile,
       TypstIcons.WIDGET_ICON,
-      TypstSettingsConfigurable::class.java
+      SettingsConfigurable::class.java
     ) {
       override val widgetActionText: @NlsActions.ActionText String
         get() = "Typst (Tinymist)"

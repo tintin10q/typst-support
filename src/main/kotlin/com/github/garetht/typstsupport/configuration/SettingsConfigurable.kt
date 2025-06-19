@@ -2,13 +2,11 @@ package com.github.garetht.typstsupport.configuration
 
 import com.github.garetht.typstsupport.languageserver.LanguageServerManager
 import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
-import com.github.garetht.typstsupport.languageserver.TypstLspServerSupportProvider
 import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.options.ConfigurationException
@@ -30,9 +28,7 @@ import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
-private val LOG = logger<TypstLspServerSupportProvider>()
-
-class TypstSettingsConfigurable(
+class SettingsConfigurable(
   private val pathValidator: PathValidator = DefaultPathValidator(),
   private val executionValidator: ExecutionValidator = DefaultExecutionValidator(
     DefaultProcessExecutor(), pathValidator,
@@ -71,7 +67,7 @@ class TypstSettingsConfigurable(
               )
                 .onChanged {
                   if (it.isSelected) {
-                    this@TypstSettingsConfigurable.resetTestResultLabel()
+                    this@SettingsConfigurable.resetTestResultLabel()
                   }
                 }
           }

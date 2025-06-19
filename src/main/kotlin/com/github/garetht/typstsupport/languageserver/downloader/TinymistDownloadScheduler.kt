@@ -1,7 +1,7 @@
 package com.github.garetht.typstsupport.languageserver.downloader
 
-import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
-import com.github.garetht.typstsupport.languageserver.locations.TinymistLocationResolver
+import com.github.garetht.typstsupport.languageserver.LanguageServerManager
+import com.github.garetht.typstsupport.languageserver.locations.LocationResolver
 import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -12,10 +12,10 @@ import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
 
 class TinymistDownloadScheduler(
-  private val resolver: TinymistLocationResolver,
+  private val resolver: LocationResolver,
   private val downloader: TinymistDownloader,
   private val fileSystem: Filesystem,
-  private val languageServerManager: TypstLanguageServerManager
+  private val languageServerManager: LanguageServerManager
 ) {
 
   companion object {

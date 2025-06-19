@@ -5,7 +5,6 @@
     <vendor>Gareth</vendor>
 
     <depends>com.intellij.modules.ultimate</depends>
-    <depends>org.jetbrains.plugins.textmate</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <platform.lsp.serverSupportProvider
@@ -36,7 +35,7 @@
                 language="TypstCode"
                 extensions="typc"/>
 
-        <applicationConfigurable instance="com.github.garetht.typstsupport.configuration.TypstSettingsConfigurable"
+        <applicationConfigurable instance="com.github.garetht.typstsupport.configuration.SettingsConfigurable"
                                  displayName="Typst Support Settings"/>
 
         <applicationService serviceImplementation="com.github.garetht.typstsupport.configuration.SettingsState"/>

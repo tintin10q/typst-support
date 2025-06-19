@@ -163,6 +163,6 @@ class TinymistPreviewServerManager : PreviewServerManager {
     private const val MAX_PORT_RETRIES = 2
 
     private val instance = TinymistPreviewServerManager()
-    fun getInstance(): TinymistPreviewServerManager = instance
+    fun getInstance(): PreviewServerManager = instance
   }
 }
