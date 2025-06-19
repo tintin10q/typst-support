@@ -1,15 +1,43 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.garetht.typstintellij</id>
-    <name>typst-intellij</name>
-    <vendor>garetht</vendor>
+    <id>com.github.garetht.typstsupport</id>
+    <name>Typst Support</name>
+    <vendor>Gareth</vendor>
 
-    <depends>com.intellij.modules.platform</depends>
-
-    <resource-bundle>messages.MyBundle</resource-bundle>
+    <depends>com.intellij.modules.ultimate</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.garetht.typstintellij.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.garetht.typstintellij.startup.MyProjectActivity" />
+        <platform.lsp.serverSupportProvider
+                implementation="com.github.garetht.typstsupport.languageserver.TypstLspServerSupportProvider"/>
+        <notificationGroup id="TypstSupport"
+                           displayType="BALLOON"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileEditorProvider implementation="com.github.garetht.typstsupport.editor.TypstEditorProvider"/>
+
+        <fileType
+                name="Typst"
+                implementationClass="com.github.garetht.typstsupport.language.filetype.TypstFileType"
+                fieldName="INSTANCE"
+                language="Typst"
+                extensions="typ"/>
+        <fileType
+                name="Typst Math"
+                implementationClass="com.github.garetht.typstsupport.language.filetype.TypstMathFileType"
+                fieldName="INSTANCE"
+                language="TypstMath"
+                extensions="typm"/>
+        <fileType
+                name="Typst Code"
+                implementationClass="com.github.garetht.typstsupport.language.filetype.TypstCodeFileType"
+                fieldName="INSTANCE"
+                language="TypstCode"
+                extensions="typc"/>
+
+        <applicationConfigurable instance="com.github.garetht.typstsupport.configuration.SettingsConfigurable"
+                                 displayName="Typst Support Settings"/>
+
+        <applicationService serviceImplementation="com.github.garetht.typstsupport.configuration.SettingsState"/>
     </extensions>
 </idea-plugin>
