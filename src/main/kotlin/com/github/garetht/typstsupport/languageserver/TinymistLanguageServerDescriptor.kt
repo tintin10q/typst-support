@@ -2,18 +2,16 @@ package com.github.garetht.typstsupport.languageserver
 
 import com.github.garetht.typstsupport.configuration.SettingsState
 import com.github.garetht.typstsupport.languageserver.locations.isSupportedTypstFileType
+import com.google.gson.JsonObject
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
 import com.intellij.platform.lsp.api.customization.LspFormattingSupport
-import com.google.gson.JsonObject
 import java.nio.file.Path
 
 private val LOG = logger<TinymistLSPDescriptor>()
-
 
 class TinymistLSPDescriptor(val languageServerPath: Path, project: Project) :
   ProjectWideLspServerDescriptor(project, "") {
@@ -25,25 +23,20 @@ class TinymistLSPDescriptor(val languageServerPath: Path, project: Project) :
 
   override fun isSupportedFile(file: VirtualFile): Boolean = file.isSupportedTypstFileType()
 
-  override val lspFormattingSupport: LspFormattingSupport?
-    get() {
-      LOG.warn("lspFormattingSupport getter called")
-      val isEDT = ApplicationManager.getApplication().isDispatchThread
-      LOG.warn("shouldFormatThisFileExclusivelyByServer called from EDT: $isEDT")
-      return object : LspFormattingSupport() {
-        override fun shouldFormatThisFileExclusivelyByServer(
-          file: VirtualFile,
-          ideCanFormatThisFileItself: Boolean,
-          serverExplicitlyWantsToFormatThisFile: Boolean
-        ): Boolean {
-          return file.isSupportedTypstFileType() || serverExplicitlyWantsToFormatThisFile
-        }
-      }
+  override val lspFormattingSupport: LspFormattingSupport? = object : LspFormattingSupport() {
+    override fun shouldFormatThisFileExclusivelyByServer(
+      file: VirtualFile,
+      ideCanFormatThisFileItself: Boolean,
+      serverExplicitlyWantsToFormatThisFile: Boolean
+    ): Boolean {
+      return file.isSupportedTypstFileType() || serverExplicitlyWantsToFormatThisFile
     }
+  }
 
-  override fun createInitializationOptions(): JsonObject? {
-    return JsonObject().apply {
-      addProperty("formatterMode", "typstyle") // or "typstfmt" - check Tinymist docs for supported formatters
-    }
+  override fun createInitializationOptions(): JsonObject? = JsonObject().apply {
+    addProperty(
+      "formatterMode",
+      settings.state.formatter.toString()
+    )
   }
 }

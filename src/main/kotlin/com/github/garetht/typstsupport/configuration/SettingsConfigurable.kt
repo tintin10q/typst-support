@@ -12,6 +12,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.JBColor
@@ -19,6 +20,7 @@ import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.bind
+import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
@@ -44,70 +46,78 @@ class TypstSettingsConfigurable(
   internal lateinit var customRadioButton: Cell<JBRadioButton>
   internal lateinit var testResultLabel: Cell<JLabel>
   internal lateinit var testBinaryButton: Cell<JButton>
+  internal lateinit var formatterDropdown: Cell<ComboBox<TypstFormatter>>
 
   // Component-internal state
   internal var binaryExecutionValidated: Boolean = false
 
   override fun createPanel(): DialogPanel {
     return panel {
-      buttonsGroup("Binary location") {
-        row {
-          automaticRadioButton = radioButton(
-            "Use automatically downloaded binary",
-            BinarySource.USE_AUTOMATIC_DOWNLOAD
-          )
-        }
-
-        row {
-          customRadioButton =
-            radioButton(
-              "Specify local binary location", BinarySource.USE_CUSTOM_BINARY
+      group("Tinymist") {
+        buttonsGroup("Binary filepath") {
+          row {
+            automaticRadioButton = radioButton(
+              "Use automatically downloaded binary",
+              BinarySource.USE_AUTOMATIC_DOWNLOAD
             )
-              .onChanged {
-                if (it.isSelected) {
-                  this@TypstSettingsConfigurable.resetTestResultLabel()
-                }
-              }
-        }
-
-        row {
-          fileField =
-            textFieldWithBrowseButton(
-              fileChooserDescriptor =
-                FileChooserDescriptorFactory.singleFile()
-                  .withTitle("Select Binary File")
-                  .withFileFilter { virtualFile ->
-                    val extension = virtualFile.extension
-                    extension == null || extension.lowercase() == "exe"
-                  },
-            )
-              .enabledIf(customRadioButton.selected)
-              .bindText(settings.state::customBinaryPath)
-              .resizableColumn()
-              .align(AlignX.FILL)
-              .validationOnInput {
-                pathValidator.validateBinaryFile(it.text).toValidationInfo(this)
-              }
-              .onChanged {
-                binaryExecutionValidated = false
-                resetTestResultLabel()
-              }
-        }
-
-
-        row {
-          testBinaryButton = button("Test Binary") {
-            testBinaryExecution(fileField.component.text)
           }
-            .enabledIf(customRadioButton.selected)
 
-          testResultLabel = label("")
-            .visibleIf(customRadioButton.selected)
-          testResultLabel.component.horizontalAlignment = SwingConstants.LEFT
+          row {
+            customRadioButton =
+              radioButton(
+                "Specify local binary location", BinarySource.USE_CUSTOM_BINARY
+              )
+                .onChanged {
+                  if (it.isSelected) {
+                    this@TypstSettingsConfigurable.resetTestResultLabel()
+                  }
+                }
+          }
+
+          row {
+            fileField =
+              textFieldWithBrowseButton(
+                fileChooserDescriptor =
+                  FileChooserDescriptorFactory.singleFile()
+                    .withTitle("Select Binary File")
+                    .withFileFilter { virtualFile ->
+                      val extension = virtualFile.extension
+                      extension == null || extension.lowercase() == "exe"
+                    },
+              )
+                .enabledIf(customRadioButton.selected)
+                .bindText(settings.state::customBinaryPath)
+                .resizableColumn()
+                .align(AlignX.FILL)
+                .validationOnInput {
+                  pathValidator.validateBinaryFile(it.text).toValidationInfo(this)
+                }
+                .onChanged {
+                  binaryExecutionValidated = false
+                  resetTestResultLabel()
+                }
+          }
+
+          row {
+            testBinaryButton = button("Test Binary") {
+              testBinaryExecution(fileField.component.text)
+            }
+              .enabledIf(customRadioButton.selected)
+
+            testResultLabel = label("")
+              .visibleIf(customRadioButton.selected)
+            testResultLabel.component.horizontalAlignment = SwingConstants.LEFT
+          }
         }
-
+          .bind(settings.state::binarySource)
       }
-        .bind(settings.state::binarySource)
+
+      group("Formatter") {
+        row("Typst Formatter") {
+          formatterDropdown = comboBox(TypstFormatter.entries)
+            .bindItem({ settings.state.formatter }, { settings.state.formatter = it ?: TypstFormatter.entries.first() })
+        }
+      }
     }
   }
 
