@@ -36,7 +36,7 @@ class DefaultPathValidationTest {
     fun `should fail with blank path`() {
       val result = pathValidator.validateBinaryFile("   ")
       assertIs<PathValidation.Failed>(result)
-      assertEquals("Binary path is empty", result.message)
+      assertEquals("Binary file does not exist", result.message)
     }
 
     @Test
@@ -60,7 +60,7 @@ class DefaultPathValidationTest {
 
       val result = pathValidator.validateBinaryFile(dir.absolutePath)
       assertIs<PathValidation.Failed>(result)
-      assertEquals("Binary file is not executable", result.message)
+      assertEquals("Binary file is a directory", result.message)
     }
 
     @Test

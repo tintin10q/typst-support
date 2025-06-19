@@ -14,7 +14,7 @@ class TinymistPreviewOptionsTest {
     val options = TinymistPreviewOptions()
     val command = options.toCommandList("file/name.typ")
 
-    assertEquals(listOf("file/name.typ", "preview"), command)
+    assertEquals(listOf("file/name.typ", "--no-open"), command)
   }
 
   @ParameterizedTest
@@ -46,7 +46,7 @@ class TinymistPreviewOptionsTest {
       packageCachePath = packageCachePath,
       cert = cert
     )
-    val command = options.toCommandList(Path.of("file/name.typ"))
+    val command = options.toCommandList("file/name.typ")
 
     expectedCommands.forEach { expected ->
       assertTrue(command.contains(expected), "Command should contain: $expected")
@@ -60,7 +60,7 @@ class TinymistPreviewOptionsTest {
     expectedCommands: List<String>
   ) {
     val options = TinymistPreviewOptions(inputs = inputs)
-    val command = options.toCommandList(Path.of("file/name.typ"))
+    val command = options.toCommandList("file/name.typ")
 
     expectedCommands.forEach { expected ->
       assertTrue(command.contains(expected), "Command should contain: $expected")
@@ -74,7 +74,7 @@ class TinymistPreviewOptionsTest {
     expectedCommand: String
   ) {
     val options = TinymistPreviewOptions(previewMode = mode)
-    val command = options.toCommandList(Path.of("file/name.typ"))
+    val command = options.toCommandList("file/name.typ")
 
     assertTrue(command.contains(expectedCommand))
   }
@@ -87,7 +87,7 @@ class TinymistPreviewOptionsTest {
     expectedCommands: List<String>
   ) {
     val options = TinymistPreviewOptions(dataPlaneHostPort = dataPlanePort, controlPlaneHostPort = controlPlanePort)
-    val command = options.toCommandList(Path.of("file/name.typ"))
+    val command = options.toCommandList("file/name.typ")
 
     expectedCommands.forEach { expected ->
       assertTrue(command.contains(expected), "Command should contain: $expected")
@@ -111,13 +111,13 @@ class TinymistPreviewOptionsTest {
       cert = Path.of("/cert.pem"),
       previewMode = TinymistPreviewOptions.PreviewMode.Slide,
       host = "localhost",
-      openInBrowser = false,
       dataPlaneHostPort = 8080,
       controlPlaneHostPort = 8081
     )
 
-    val command = options.toCommandList(Path.of("file/name.typ"))
+    val command = options.toCommandList("file/name.typ")
     val expectedCommands = listOf(
+      "file/name.typ",
       "--partial-rendering",
       "--invert-colors={\"rest\": \"always\", \"image\": \"never\"}",
       "--root", "/root",

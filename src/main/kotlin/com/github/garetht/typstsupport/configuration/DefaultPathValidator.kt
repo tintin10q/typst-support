@@ -13,6 +13,10 @@ class DefaultPathValidator : PathValidator {
       return PathValidation.Failed("Binary file does not exist")
     }
 
+    if (file.isDirectory()) {
+      return PathValidation.Failed("Binary file is a directory")
+    }
+
     if (!file.canExecute()) {
       return PathValidation.Failed("Binary file is not executable")
     }
