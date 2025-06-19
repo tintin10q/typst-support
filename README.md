@@ -1,5 +1,3 @@
-#
-
 <div style="text-align: center;">
   <img alt="Typst Support Logo" src="./assets/logo.png" width="450" />
 </div>
