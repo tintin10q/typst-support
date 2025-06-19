@@ -17,7 +17,7 @@ class TypstManager(
       is DownloadStatus.Downloaded -> {
         // This is where the server actually gets started – it is provided the
         // path to the server binary
-        serverStarter.ensureServerStarted(TinymistLSPDescriptor(status.path, project))
+        serverStarter.ensureServerStarted(TinymistLanguageServerDescriptor(status.path, project))
       }
       else -> {}
     }

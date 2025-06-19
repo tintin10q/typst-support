@@ -11,9 +11,9 @@ import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
 import com.intellij.platform.lsp.api.customization.LspFormattingSupport
 import java.nio.file.Path
 
-private val LOG = logger<TinymistLSPDescriptor>()
+private val LOG = logger<TinymistLanguageServerDescriptor>()
 
-class TinymistLSPDescriptor(val languageServerPath: Path, project: Project) :
+class TinymistLanguageServerDescriptor(val languageServerPath: Path, project: Project) :
   ProjectWideLspServerDescriptor(project, "") {
 
   val settings = SettingsState.getInstance()
@@ -23,14 +23,12 @@ class TinymistLSPDescriptor(val languageServerPath: Path, project: Project) :
 
   override fun isSupportedFile(file: VirtualFile): Boolean = file.isSupportedTypstFileType()
 
-  override val lspFormattingSupport: LspFormattingSupport? = object : LspFormattingSupport() {
+  override val lspFormattingSupport: LspFormattingSupport = object : LspFormattingSupport() {
     override fun shouldFormatThisFileExclusivelyByServer(
       file: VirtualFile,
       ideCanFormatThisFileItself: Boolean,
       serverExplicitlyWantsToFormatThisFile: Boolean
-    ): Boolean {
-      return file.isSupportedTypstFileType() || serverExplicitlyWantsToFormatThisFile
-    }
+    ): Boolean = file.isSupportedTypstFileType() || serverExplicitlyWantsToFormatThisFile
   }
 
   override fun createInitializationOptions(): JsonObject? = JsonObject().apply {

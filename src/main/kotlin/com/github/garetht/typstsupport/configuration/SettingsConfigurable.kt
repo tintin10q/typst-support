@@ -1,5 +1,6 @@
 package com.github.garetht.typstsupport.configuration
 
+import com.github.garetht.typstsupport.languageserver.LanguageServerManager
 import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
 import com.github.garetht.typstsupport.languageserver.TypstLspServerSupportProvider
 import com.github.garetht.typstsupport.notifier.Notifier
@@ -37,6 +38,7 @@ class TypstSettingsConfigurable(
     DefaultProcessExecutor(), pathValidator,
   ),
   private val settings: SettingsState = SettingsState.getInstance(),
+  private val languageServerManager: LanguageServerManager = TypstLanguageServerManager(),
 ) :
   BoundSearchableConfigurable("Typst Support Settings", "") {
 
@@ -104,8 +106,10 @@ class TypstSettingsConfigurable(
             }
               .enabledIf(customRadioButton.selected)
 
+
             testResultLabel = label("")
               .visibleIf(customRadioButton.selected)
+
             testResultLabel.component.horizontalAlignment = SwingConstants.LEFT
           }
         }
@@ -133,7 +137,6 @@ class TypstSettingsConfigurable(
 
     // Run validation in background thread to avoid blocking UI
     ApplicationManager.getApplication().executeOnPooledThread {
-
       try {
         val result = executionValidator.validateBinaryExecution(binaryPath)
         binaryExecutionValidated = when (result) {
@@ -154,7 +157,6 @@ class TypstSettingsConfigurable(
   }
 
   private fun updateTestResult(result: ExecutionValidation) {
-
     when (result) {
       is ExecutionValidation.Success -> {
         testResultLabel.component.icon = AllIcons.General.InspectionsOK
@@ -189,14 +191,13 @@ class TypstSettingsConfigurable(
     ApplicationManager.getApplication().invokeLater {
       val projectManager = ApplicationManager.getApplication().service<ProjectManager>()
       val openProjects = projectManager.openProjects
-      val manager = TypstLanguageServerManager()
       openProjects.forEach { project ->
         ApplicationManager.getApplication().executeOnPooledThread {
           runBlocking {
             if (project.isDisposed) {
               return@runBlocking
             }
-            manager.initialStart(project)
+            languageServerManager.initialStart(project)
             Notifier.info("Restarting Tinymist server...")
           }
         }

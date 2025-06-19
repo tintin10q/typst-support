@@ -179,7 +179,7 @@ class DefaultPathValidationTest {
       val result = PathValidation.Failed("test error").toConfigurationException()
 
       assertIs<ConfigurationException>(result)
-      assertEquals("test error", result?.message)
+      assertEquals("test error", result.localizedMessage)
     }
 
     @Test
@@ -201,7 +201,7 @@ class DefaultPathValidationTest {
       val result = PathValidation.Failed(errorMessage).toConfigurationException()
 
       assertIs<ConfigurationException>(result)
-      assertEquals(errorMessage, result?.message)
+      assertEquals(errorMessage, result.localizedMessage)
     }
   }
 } 

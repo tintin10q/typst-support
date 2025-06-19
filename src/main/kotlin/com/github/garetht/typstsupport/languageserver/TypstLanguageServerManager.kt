@@ -1,6 +1,5 @@
 package com.github.garetht.typstsupport.languageserver
 
-import com.github.garetht.typstsupport.previewserver.TinymistPreviewServerManager
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.logger
@@ -18,8 +17,9 @@ import kotlin.time.Duration.Companion.seconds
 
 private val LOG = logger<TypstLanguageServerManager>()
 
-class TypstLanguageServerManager {
-  suspend fun initialStart(project: Project) {
+
+class TypstLanguageServerManager : LanguageServerManager {
+  override suspend fun initialStart(project: Project) {
     val providerClass = TypstLspServerSupportProvider::class.java
     val manager = LspServerManager.getInstance(project)
     manager.stopAndRestartIfNeeded(providerClass)
@@ -46,24 +46,22 @@ class TypstLanguageServerManager {
     suspend fun waitForServer(
       manager: LspServerManager,
       cls: Class<out LspServerSupportProvider>
-    ): LspServer? {
-      return withTimeoutOrNull(languageServerPollTimeout) {
-        while (true) {
-          val servers = manager.getServersForProvider(cls)
-          val targetServer =
-            servers.find { server -> server.providerClass.canonicalName == cls.canonicalName }
+    ): LspServer? = withTimeoutOrNull(languageServerPollTimeout) {
+      var result: LspServer? = null
+      while (result == null) {
+        val servers = manager.getServersForProvider(cls)
+        val targetServer =
+          servers.find { server -> server.providerClass.canonicalName == cls.canonicalName }
 
-          LOG.warn("target server: $targetServer, state: ${targetServer?.state}, class: ${cls.canonicalName}")
+        LOG.warn("target server: $targetServer, state: ${targetServer?.state}, class: ${cls.canonicalName}")
 
-          if (targetServer?.state == LspServerState.Running) {
-            // the server has started up, restart the code analyzer
-            return@withTimeoutOrNull targetServer
-          }
-
+        if (targetServer?.state == LspServerState.Running) {
+          result = targetServer
+        } else {
           delay(languageServerPollDelay)
         }
-        return@withTimeoutOrNull null
       }
+      result
     }
   }
 }
