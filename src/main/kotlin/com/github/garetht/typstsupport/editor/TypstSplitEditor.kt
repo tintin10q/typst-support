@@ -5,16 +5,10 @@ import com.intellij.openapi.fileEditor.TextEditorWithPreview
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import javax.swing.JComponent
 
 class TypstSplitEditor(project: Project, file: VirtualFile) :
   TextEditorWithPreview(
     TextEditorProvider.getInstance().createEditor(project, file) as TextEditor,
     TypstPreviewEditor(project, file),
     "TypstSplitEditor",
-  ) {
-
-  override fun getComponent(): JComponent {
-    return super.getComponent()
-  }
-}
+  )

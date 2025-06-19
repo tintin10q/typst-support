@@ -15,7 +15,6 @@ import com.intellij.platform.lsp.api.LspServer
 import com.intellij.platform.lsp.api.LspServerSupportProvider
 import com.intellij.platform.lsp.api.lsWidget.LspServerWidgetItem
 
-private val LOG = logger<TypstLspServerSupportProvider>()
 
 class TypstLspServerSupportProvider : LspServerSupportProvider {
   private val downloadScheduler by lazy {
