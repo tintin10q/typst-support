@@ -63,6 +63,16 @@ dependencies {
 // Configure IntelliJ Platform Gradle Plugin - read more:
 // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-extension.html
 intellijPlatform {
+  pluginVerification {
+    ides {
+      val productReleases = ProductReleasesValueSource().get()
+      val reducedProductReleases =
+        if (productReleases.size > 2) listOf(productReleases.first(), productReleases.last())
+        else productReleases
+      ides(reducedProductReleases)
+    }
+  }
+
   pluginConfiguration {
     name = providers.gradleProperty("pluginName")
     version = providers.gradleProperty("pluginVersion")
