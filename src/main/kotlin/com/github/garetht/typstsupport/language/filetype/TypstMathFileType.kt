@@ -25,4 +25,8 @@ class TypstMathFileType private constructor() : LanguageFileType(TypstMathLangua
   override fun getIcon(): Icon {
     return TypstIcons.TYPST_FILE
   }
+
+  companion object {
+    val INSTANCE: TypstMathFileType = TypstMathFileType()
+  }
 }

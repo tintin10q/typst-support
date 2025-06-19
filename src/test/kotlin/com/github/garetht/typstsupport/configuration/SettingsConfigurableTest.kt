@@ -157,6 +157,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
     configurable.fileField.component.textField.text = "/valid/path"
 
     configurable.testBinaryButton.component.doClick()
+    configurable.testBinaryButton.component.doClick()
 
     runInEdtAndWait {
       PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue()

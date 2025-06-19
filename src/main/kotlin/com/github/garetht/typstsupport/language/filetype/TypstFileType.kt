@@ -25,4 +25,8 @@ class TypstFileType private constructor() : LanguageFileType(TypstLanguage.INSTA
   override fun getIcon(): Icon {
     return TypstIcons.TYPST_FILE
   }
+
+  companion object {
+    val INSTANCE: TypstFileType = TypstFileType()
+  }
 }
