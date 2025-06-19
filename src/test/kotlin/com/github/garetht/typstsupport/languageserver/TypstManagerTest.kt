@@ -38,7 +38,7 @@ class TypstManagerTest {
     typstManager.startIfRequired()
 
     // Assert
-    verify(exactly = 1) { serverStarter.ensureServerStarted(ofType(LanguageServerDescriptor::class)) }
+    verify(exactly = 1) { serverStarter.ensureServerStarted(ofType(TinymistLSPDescriptor::class)) }
   }
 
   @Test
@@ -71,6 +71,6 @@ class TypstManagerTest {
     typstManager.startIfRequired()
 
     // Assert
-    verify { serverStarter.ensureServerStarted(match<LanguageServerDescriptor> { it.languageServerPath == mockPath }) }
+    verify { serverStarter.ensureServerStarted(match<TinymistLSPDescriptor> { it.languageServerPath == mockPath }) }
   }
 }

@@ -1,11 +1,13 @@
 package com.github.garetht.typstsupport.editor
 
 import com.github.garetht.typstsupport.previewserver.PreviewServerManager
+import com.github.garetht.typstsupport.previewserver.TinymistPreviewServerManager
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorState
 import com.intellij.openapi.fileEditor.FileEditorStateLevel
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
@@ -15,6 +17,7 @@ import org.cef.handler.CefLoadHandler
 import org.cef.network.CefRequest
 import java.awt.BorderLayout
 import java.awt.CardLayout
+import java.awt.event.HierarchyEvent
 import java.awt.event.InputEvent
 import java.beans.PropertyChangeListener
 import javax.swing.JComponent
@@ -24,9 +27,12 @@ import javax.swing.SwingConstants
 
 private val LOG = logger<TypstPreviewEditor>()
 
-class TypstPreviewEditor(private val file: VirtualFile, previewServerManager: PreviewServerManager) :
+class TypstPreviewEditor(
+  private val project: Project,
+  private val file: VirtualFile,
+  private val previewServerManager: PreviewServerManager = TinymistPreviewServerManager.getInstance()
+) :
   UserDataHolderBase(), FileEditor {
-
   private val panel = JPanel(BorderLayout())
   private val browser =
     JBCefBrowser.createBuilder()
@@ -37,21 +43,33 @@ class TypstPreviewEditor(private val file: VirtualFile, previewServerManager: Pr
   private val loadingPanel = JPanel(BorderLayout()).apply {
     add(JLabel("Loading preview...", SwingConstants.CENTER), BorderLayout.CENTER)
   }
+  private val failedPanel = JPanel(BorderLayout()).apply {
+    add(JLabel("Failed to load preview", SwingConstants.CENTER), BorderLayout.CENTER)
+  }
 
   init {
+    component.addHierarchyListener { e ->
+      if (e.changeFlags and HierarchyEvent.SHOWING_CHANGED.toLong() != 0L) {
+        if (component.isShowing) {
+          previewServerManager.createServer(file.path, project) { staticServerAddress ->
+            ApplicationManager.getApplication().invokeLater {
+              if (staticServerAddress == null) {
+                cardLayout.show(containerPanel, "failed")
+              } else {
+                browser.loadURL(staticServerAddress)
+              }
+            }
+          }
+        }
+      }
+    }
+
     containerPanel.add(browser.component, "browser")
     containerPanel.add(loadingPanel, "loading")
+    containerPanel.add(failedPanel, "failed")
     panel.add(containerPanel, BorderLayout.CENTER)
 
     cardLayout.show(containerPanel, "loading")
-
-    previewServerManager.createServer(file.path) {
-      ApplicationManager.getApplication().invokeLater {
-        LOG.warn("Attempting to start the preview loader on port $it")
-        browser.loadURL("http://127.0.0.1:$it")
-        LOG.warn("Did to start the preview loader on port $it")
-      }
-    }
 
     browser.jbCefClient.addLoadHandler(object : CefLoadHandler {
       override fun onLoadingStateChange(

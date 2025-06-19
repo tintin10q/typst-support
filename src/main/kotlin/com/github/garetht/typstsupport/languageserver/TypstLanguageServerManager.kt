@@ -1,9 +1,11 @@
 package com.github.garetht.typstsupport.languageserver
 
+import com.github.garetht.typstsupport.previewserver.TinymistPreviewServerManager
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.platform.lsp.api.LspServer
 import com.intellij.platform.lsp.api.LspServerManager
 import com.intellij.platform.lsp.api.LspServerState
 import com.intellij.platform.lsp.api.LspServerSupportProvider
@@ -18,7 +20,7 @@ private val LOG = logger<TypstLanguageServerManager>()
 
 class TypstLanguageServerManager {
   suspend fun initialStart(project: Project) {
-    val providerClass = TypstSupportProvider::class.java
+    val providerClass = TypstLspServerSupportProvider::class.java
     val manager = LspServerManager.getInstance(project)
     manager.stopAndRestartIfNeeded(providerClass)
     repaintOnIntialize(manager, project, providerClass)
@@ -33,26 +35,36 @@ class TypstLanguageServerManager {
       project: Project,
       cls: Class<out LspServerSupportProvider>
     ) {
-      withTimeoutOrNull(languageServerPollTimeout) {
+      waitForServer(manager, cls)
+      restartCodeAnalyzer(project)
+    }
+
+    private suspend fun restartCodeAnalyzer(project: Project) {
+      withContext(Dispatchers.EDT) { DaemonCodeAnalyzer.getInstance(project).restart() }
+    }
+
+    suspend fun waitForServer(
+      manager: LspServerManager,
+      cls: Class<out LspServerSupportProvider>
+    ): LspServer? {
+      return withTimeoutOrNull(languageServerPollTimeout) {
         while (true) {
           val servers = manager.getServersForProvider(cls)
           val targetServer =
             servers.find { server -> server.providerClass.canonicalName == cls.canonicalName }
 
+          LOG.warn("target server: $targetServer, state: ${targetServer?.state}, class: ${cls.canonicalName}")
+
           if (targetServer?.state == LspServerState.Running) {
             // the server has started up, restart the code analyzer
-            restartCodeAnalyzer(project)
-            break
+            return@withTimeoutOrNull targetServer
           }
 
           delay(languageServerPollDelay)
         }
-      } ?: TypstLanguageServerManager.run { restartCodeAnalyzer(project) }
-    }
-
-    private suspend fun restartCodeAnalyzer(project: Project) {
-      LOG.warn("Restarting code analyzer for ${project.name}")
-      withContext(Dispatchers.EDT) { DaemonCodeAnalyzer.getInstance(project).restart() }
+        return@withTimeoutOrNull null
+      }
     }
   }
 }
+

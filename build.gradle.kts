@@ -55,6 +55,7 @@ dependencies {
     // plugin from JetBrains Marketplace.
     plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
 
+
     testFramework(TestFrameworkType.Platform)
   }
 }

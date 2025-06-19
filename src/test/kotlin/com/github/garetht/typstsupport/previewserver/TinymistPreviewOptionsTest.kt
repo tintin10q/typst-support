@@ -12,9 +12,9 @@ class TinymistPreviewOptionsTest {
   @Test
   fun `default options should only include basic command`() {
     val options = TinymistPreviewOptions()
-    val command = options.toCommandList(Path.of("/home/tinymist"))
+    val command = options.toCommandList("file/name.typ")
 
-    assertEquals(listOf("/home/tinymist", "preview"), command)
+    assertEquals(listOf("file/name.typ", "preview"), command)
   }
 
   @ParameterizedTest
@@ -24,7 +24,7 @@ class TinymistPreviewOptionsTest {
     expectedCommand: String
   ) {
     val options = TinymistPreviewOptions(invertColors = invertColors)
-    val command = options.toCommandList(Path.of("/home/tinymist"))
+    val command = options.toCommandList("file/name.typ")
 
     assertTrue(command.contains(expectedCommand))
   }
@@ -46,7 +46,7 @@ class TinymistPreviewOptionsTest {
       packageCachePath = packageCachePath,
       cert = cert
     )
-    val command = options.toCommandList(Path.of("/home/tinymist"))
+    val command = options.toCommandList(Path.of("file/name.typ"))
 
     expectedCommands.forEach { expected ->
       assertTrue(command.contains(expected), "Command should contain: $expected")
@@ -60,7 +60,7 @@ class TinymistPreviewOptionsTest {
     expectedCommands: List<String>
   ) {
     val options = TinymistPreviewOptions(inputs = inputs)
-    val command = options.toCommandList(Path.of("/home/tinymist"))
+    val command = options.toCommandList(Path.of("file/name.typ"))
 
     expectedCommands.forEach { expected ->
       assertTrue(command.contains(expected), "Command should contain: $expected")
@@ -74,7 +74,7 @@ class TinymistPreviewOptionsTest {
     expectedCommand: String
   ) {
     val options = TinymistPreviewOptions(previewMode = mode)
-    val command = options.toCommandList(Path.of("/home/tinymist"))
+    val command = options.toCommandList(Path.of("file/name.typ"))
 
     assertTrue(command.contains(expectedCommand))
   }
@@ -87,7 +87,7 @@ class TinymistPreviewOptionsTest {
     expectedCommands: List<String>
   ) {
     val options = TinymistPreviewOptions(dataPlaneHostPort = dataPlanePort, controlPlaneHostPort = controlPlanePort)
-    val command = options.toCommandList(Path.of("/home/tinymist"))
+    val command = options.toCommandList(Path.of("file/name.typ"))
 
     expectedCommands.forEach { expected ->
       assertTrue(command.contains(expected), "Command should contain: $expected")
@@ -116,10 +116,8 @@ class TinymistPreviewOptionsTest {
       controlPlaneHostPort = 8081
     )
 
-    val command = options.toCommandList(Path.of("/home/tinymist"))
+    val command = options.toCommandList(Path.of("file/name.typ"))
     val expectedCommands = listOf(
-      "/home/tinymist",
-      "preview",
       "--partial-rendering",
       "--invert-colors={\"rest\": \"always\", \"image\": \"never\"}",
       "--root", "/root",

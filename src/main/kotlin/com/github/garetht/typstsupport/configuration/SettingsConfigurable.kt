@@ -1,7 +1,7 @@
 package com.github.garetht.typstsupport.configuration
 
 import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
-import com.github.garetht.typstsupport.languageserver.TypstSupportProvider
+import com.github.garetht.typstsupport.languageserver.TypstLspServerSupportProvider
 import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
@@ -27,7 +27,7 @@ import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
-private val LOG = logger<TypstSupportProvider>()
+private val LOG = logger<TypstLspServerSupportProvider>()
 
 class TypstSettingsConfigurable(
   private val pathValidator: PathValidator = DefaultPathValidator(),

@@ -1,12 +1,15 @@
 package com.github.garetht.typstsupport.previewserver
 
+import com.intellij.openapi.vfs.VirtualFile
 import java.nio.file.Path
+import java.util.UUID
 
 data class TinymistPreviewOptions(
   val partialRendering: Boolean? = null,
   val invertColors: InvertColors? = null,
   val root: Path? = null,
   val inputs: Map<String, String> = emptyMap(),
+  val taskId: UUID? = null,
   val fontPaths: List<Path> = emptyList(),
   val ignoreSystemFonts: Boolean = false,
   val packagePath: Path? = null,
@@ -14,12 +17,15 @@ data class TinymistPreviewOptions(
   val cert: Path? = null,
   val previewMode: PreviewMode? = null,
   val host: String = "",
-  val openInBrowser: Boolean = true,
   val dataPlaneHostPort: Int? = null,
   val controlPlaneHostPort: Int? = null,
 ) {
-  fun toCommandList(tinymistBinaryLocation: Path): List<String> {
-    val command = mutableListOf("$tinymistBinaryLocation", "preview")
+  fun toCommandParamsArguments(filename: String): List<List<String>> {
+    return listOf(this.toCommandList(filename))
+  }
+
+  fun toCommandList(filename: String): List<String> {
+    val command = mutableListOf(filename)
 
     if (partialRendering == true) {
       command.add("--partial-rendering")
@@ -64,13 +70,15 @@ data class TinymistPreviewOptions(
       command.addAll(listOf("--preview-mode", previewMode.value))
     }
 
+    if (taskId != null) {
+      command.addAll(listOf("--task-id", taskId.toString()))
+    }
+
     if (host.isNotEmpty()) {
       command.addAll(listOf("--host", host))
     }
 
-    if (!openInBrowser) {
-      command.add("--no-open")
-    }
+    command.add("--no-open")
 
     dataPlaneHostPort?.let { command.addAll(listOf("--data-plane-host", "127.0.0.1:$it")) }
     controlPlaneHostPort?.let { command.addAll(listOf("--control-plane-host", "127.0.0.1:$it")) }

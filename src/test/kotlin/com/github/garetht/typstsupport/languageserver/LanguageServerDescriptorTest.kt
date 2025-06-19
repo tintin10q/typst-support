@@ -19,7 +19,7 @@ class LanguageServerDescriptorTest {
   @ValueSource(strings = ["typ", "typc", "typm"])
   fun shouldSupportTypstFileTypes(fileName: String) {
     // Arrange
-    val descriptor = LanguageServerDescriptor(
+    val descriptor = TinymistLSPDescriptor(
       Path.of(""),
       getMockedProject()
     )
@@ -39,7 +39,7 @@ class LanguageServerDescriptorTest {
   @ValueSource(strings = ["txt", "java", "py", "js", "json"])
   fun shouldNotSupportOtherExtensions(fileName: String) {
     // Arrange
-    val descriptor = LanguageServerDescriptor(
+    val descriptor = TinymistLSPDescriptor(
       Path.of(""),
       getMockedProject()
     )
@@ -59,7 +59,7 @@ class LanguageServerDescriptorTest {
   fun shouldCreateCommandLineFromPath() {
     // Arrange
     val path = Path.of("/" + UUID.randomUUID())
-    val descriptor = LanguageServerDescriptor(
+    val descriptor = TinymistLSPDescriptor(
       path,
       getMockedProject()
     )

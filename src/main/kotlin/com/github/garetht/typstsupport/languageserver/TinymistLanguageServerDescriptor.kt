@@ -1,0 +1,47 @@
+package com.github.garetht.typstsupport.languageserver
+
+import com.github.garetht.typstsupport.languageserver.locations.isSupportedTypstFileType
+import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.lsp.api.Lsp4jClient
+import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
+import com.intellij.platform.lsp.api.customization.LspFormattingSupport
+import com.google.gson.JsonObject
+import java.nio.file.Path
+
+private val LOG = logger<TinymistLSPDescriptor>()
+
+
+class TinymistLSPDescriptor(val languageServerPath: Path, project: Project) :
+  ProjectWideLspServerDescriptor(project, "") {
+  override fun createCommandLine(): GeneralCommandLine =
+    GeneralCommandLine(languageServerPath.toString())
+
+  override fun isSupportedFile(file: VirtualFile): Boolean = file.isSupportedTypstFileType()
+
+  override val lspFormattingSupport: LspFormattingSupport?
+    get() {
+      LOG.warn("lspFormattingSupport getter called")
+      val isEDT = ApplicationManager.getApplication().isDispatchThread
+      LOG.warn("shouldFormatThisFileExclusivelyByServer called from EDT: $isEDT")
+      return object : LspFormattingSupport() {
+        override fun shouldFormatThisFileExclusivelyByServer(
+          file: VirtualFile,
+          ideCanFormatThisFileItself: Boolean,
+          serverExplicitlyWantsToFormatThisFile: Boolean
+        ): Boolean {
+          LOG.warn("formatting was called, $file")
+          return true
+        }
+      }
+    }
+
+  override fun createInitializationOptions(): JsonObject? {
+    return JsonObject().apply {
+      addProperty("formatterMode", "typstyle") // or "typstfmt" - check Tinymist docs for supported formatters
+    }
+  }
+}
