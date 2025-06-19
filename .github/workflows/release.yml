@@ -24,6 +24,13 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
+      # Free GitHub Actions Environment Disk Space
+      - name: Maximize Build Space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          large-packages: true
+
       # Set up Java environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v4
