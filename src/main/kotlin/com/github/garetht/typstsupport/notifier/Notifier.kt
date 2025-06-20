@@ -18,6 +18,7 @@ object Notifier {
       .notify(project)
   }
 
+  fun error(message: String) = notify(message, NotificationType.ERROR)
   fun warn(message: String) = notify(message, NotificationType.WARNING)
   fun info(message: String) = notify(message, NotificationType.INFORMATION)
 

@@ -114,6 +114,7 @@ class SettingsConfigurableTest : BasePlatformTestCase() {
       object : PathValidator {
         override fun validateBinaryFile(binaryPath: String): PathValidation =
           PathValidation.Success
+
       }, object : ExecutionValidator {
         override fun validateBinaryExecution(binaryPath: String): ExecutionValidation =
           ExecutionValidation.Failed(failureMessage)

@@ -53,7 +53,7 @@ class TypstLanguageServerManager : LanguageServerManager {
         val targetServer =
           servers.find { server -> server.providerClass.canonicalName == cls.canonicalName }
 
-        LOG.warn("target server: $targetServer, state: ${targetServer?.state}, class: ${cls.canonicalName}")
+        LOG.info("Tinymist target server: $targetServer, state: ${targetServer?.state}, class: ${cls.canonicalName}")
 
         if (targetServer?.state == LspServerState.Running) {
           result = targetServer
