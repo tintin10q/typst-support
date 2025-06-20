@@ -39,7 +39,7 @@ class TinymistDownloadScheduler(
       return DownloadStatus.Downloading
     }
 
-    // the path can exist because the user has specified it
+    // the path can also exist because the user has specified it
     if (fileSystem.exists(path)) {
       return DownloadStatus.Downloaded(path)
     } else {
@@ -54,6 +54,8 @@ class TinymistDownloadScheduler(
           } catch (ce: CancellationException) {
             Notifier.warn(DOWNLOAD_CANCELLED_MSG)
             throw ce
+          } catch (_: Exception) {
+            isDownloading.set(false)
           }
         }
       }
