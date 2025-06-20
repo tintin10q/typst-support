@@ -1,5 +1,6 @@
 package com.github.garetht.typstsupport.editor
 
+import com.github.garetht.typstsupport.languageserver.locations.isSupportedTypstFileType
 import com.github.garetht.typstsupport.previewserver.PreviewServerManager
 import com.github.garetht.typstsupport.previewserver.TinymistPreviewServerManager
 import com.intellij.openapi.application.ApplicationManager
@@ -51,12 +52,16 @@ class TypstPreviewEditor(
     component.addHierarchyListener { e ->
       if (e.changeFlags and HierarchyEvent.SHOWING_CHANGED.toLong() != 0L) {
         if (component.isShowing) {
-          previewServerManager.createServer(file.path, project) { staticServerAddress ->
-            ApplicationManager.getApplication().invokeLater {
-              if (staticServerAddress == null) {
-                cardLayout.show(containerPanel, "failed")
-              } else {
-                browser.loadURL(staticServerAddress)
+          LOG.warn("Showing preview for: ${file.path}")
+          if (file.isSupportedTypstFileType()) {
+            previewServerManager.createServer(file.path, project) { staticServerAddress ->
+              LOG.warn("Preview server address: ${file.path}")
+              ApplicationManager.getApplication().invokeLater {
+                if (staticServerAddress == null) {
+                  cardLayout.show(containerPanel, "failed")
+                } else {
+                  browser.loadURL(staticServerAddress)
+                }
               }
             }
           }

@@ -6,6 +6,8 @@ import com.intellij.ui.layout.ValidationInfoBuilder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -204,4 +206,72 @@ class DefaultPathValidationTest {
       assertEquals(errorMessage, result.localizedMessage)
     }
   }
-} 
+
+  @Nested
+  inner class ValidatePath {
+    private val pathValidator = DefaultPathValidator()
+
+    @ParameterizedTest
+    @ValueSource(
+      strings = [
+        // Linux/Unix absolute paths
+        "/",
+        "/home",
+        "/home/user",
+        "/home/user/documents",
+        "/usr/bin/bash",
+        "/var/log/system.log",
+        "/opt/app/bin/executable",
+        "/tmp/temp_file.txt",
+        "/etc/passwd",
+        "/home/user/file with spaces.txt",
+        "/home/user/файл.txt", // Unicode filename
+        "/home/user/.hidden",
+        "/home/user/.config/app",
+        "/path/to/very/deeply/nested/directory/structure/file.txt",
+
+        // Windows absolute paths
+        "C:\\",
+        "C:\\Windows",
+        "C:\\Users\\user",
+        "C:\\Program Files\\App",
+        "C:\\Program Files (x86)\\App",
+        "D:\\Data\\file.txt",
+        "E:\\Backups\\2024\\January\\backup.zip",
+        "C:\\Users\\user\\Documents\\file with spaces.docx",
+        "C:\\temp\\файл.txt", // Unicode on Windows
+        "\\\\server\\share", // UNC path
+        "\\\\server\\share\\folder",
+        "\\\\server\\share\\folder\\file.txt",
+      ]
+    )
+    fun `should return true for valid paths`(path: String) {
+      assertTrue("Path should be valid: $path", pathValidator.isValidPath(path))
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+      strings = [
+        // Empty/null-like cases
+        "",
+        " ",
+        "   ",
+        "\t",
+        "\n",
+
+        // Malformed paths
+        "C:",  // Drive without separator
+        "C:file.txt", // Drive-relative (often problematic)
+
+        // Paths that look like commands or have suspicious structure
+        "Remote Server", // Your original example - space without separator
+        "Network Drive",
+        "Shared Folder",
+        "rm -rf /",
+      ]
+    )
+    fun `should return false for invalid paths`(path: String) {
+      assertFalse("Path should be invalid: $path", pathValidator.isValidPath(path))
+    }
+  }
+}

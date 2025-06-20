@@ -6,3 +6,4 @@ build
 .kotlin
 .run
 .DS_Store
+out

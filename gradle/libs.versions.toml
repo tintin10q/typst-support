@@ -15,7 +15,6 @@ kotlin = "2.1.21"
 kover = "0.9.1"
 qodana = "2024.3.4"
 
-
 [libraries]
 junitVintageEngine = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junit" }
 jupiter = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
