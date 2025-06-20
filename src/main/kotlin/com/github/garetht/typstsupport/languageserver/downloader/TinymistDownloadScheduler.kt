@@ -40,6 +40,10 @@ class TinymistDownloadScheduler(
     }
 
     // the path can also exist because the user has specified it
+    // note that we assume that the existence of the file is sufficient
+    // and do not check for correctness. when the user first specifies a
+    // binary they will have to test it for correctness, but this will not
+    // handle any later corruption
     if (fileSystem.exists(path)) {
       return DownloadStatus.Downloaded(path)
     } else {
