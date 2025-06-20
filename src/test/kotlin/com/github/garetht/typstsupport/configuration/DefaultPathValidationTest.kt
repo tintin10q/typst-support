@@ -1,5 +1,6 @@
 package com.github.garetht.typstsupport.configuration
 
+import com.github.garetht.typstsupport.configuration.PathValidator.Companion.isValidPath
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.layout.ValidationInfoBuilder
@@ -246,7 +247,7 @@ class DefaultPathValidationTest {
       ]
     )
     fun `should return true for valid paths`(path: String) {
-      assertTrue("Path should be valid: $path", pathValidator.isValidPath(path))
+      assertTrue("Path should be valid: $path", path.isValidPath())
     }
 
     @ParameterizedTest
@@ -271,7 +272,7 @@ class DefaultPathValidationTest {
       ]
     )
     fun `should return false for invalid paths`(path: String) {
-      assertFalse("Path should be invalid: $path", pathValidator.isValidPath(path))
+      assertFalse("Path should be invalid: $path", path.isValidPath())
     }
   }
 }
