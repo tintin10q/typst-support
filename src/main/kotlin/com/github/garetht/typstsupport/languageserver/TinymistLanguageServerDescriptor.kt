@@ -19,11 +19,14 @@ class TinymistLanguageServerDescriptor(val languageServerPath: Path, project: Pr
   LspServerDescriptor(
     project,
     "Tinymist",
+    // filtering for .isValidPath allows us to get around some Jupyter strangeness, where
+    // a file called Remote Server is said to be one of the base directories, causing the
+    // language server to crash
     *project.getBaseDirectories().filter { it.path.isValidPath() }.toTypedArray()
   ) {
 
   init {
-    LOG.warn("Language server project base dirs: ${project.getBaseDirectories().map { it.path }}")
+    LOG.info("Language server project base dirs: ${project.getBaseDirectories().map { it.path }}")
   }
 
   val settings = SettingsState.getInstance()
