@@ -54,7 +54,7 @@ class TinymistPreviewServerManager : PreviewServerManager {
 
         // Try to start the server with different ports if needed
         for (attempt in 0 until MAX_START_RETRIES) {
-          LOG.warn("Starting server on attempt ${attempt + 1}")
+          LOG.info("Starting server on attempt ${attempt + 1}")
           val dataPlanePort = findAvailablePort()
           val controlPlanePort = findAvailablePort()
 
@@ -68,7 +68,7 @@ class TinymistPreviewServerManager : PreviewServerManager {
             callback(staticServerAddress)
             return@runBlocking
           } catch (e: Exception) {
-            LOG.warn(
+            LOG.error(
               "Failed to start server for $filepath on attempt ${attempt + 1}: ${e.message}"
             )
             // Don't retry if we've hit max attempts
@@ -132,7 +132,7 @@ class TinymistPreviewServerManager : PreviewServerManager {
         taskId = taskId,
       )
 
-    LOG.warn("Starting server with command: $options")
+    LOG.info("Starting server with command: $options")
 
     return retrieveServer(project)?.sendRequestSync {
       it.workspaceService.executeCommand(
@@ -141,7 +141,7 @@ class TinymistPreviewServerManager : PreviewServerManager {
           options.toCommandParamsArguments(filename)
         )
       ).handle { result, throwable ->
-        LOG.warn("Server result: $result, $throwable")
+        LOG.info("Retrieved server: result: $result, $throwable")
         if (throwable != null) {
           null
         } else {

@@ -28,8 +28,8 @@ private val LOG = logger<TinymistDownloader>()
 
 class TinymistDownloader {
   companion object {
-    private const val DOWNLOAD_TIMEOUT_MS = 30000 // 30 seconds
-    private const val CONNECTION_TIMEOUT_MS = 10000 // 10 seconds
+    private const val DOWNLOAD_TIMEOUT_MS = 300000 // 5 minutes
+    private const val CONNECTION_TIMEOUT_MS = 15000 // 10 seconds
 
     // File size constants
     private const val BYTES_PER_KB = 1024L
@@ -46,7 +46,7 @@ class TinymistDownloader {
       var readLen: Int
       val destination = path.parent
 
-      LOG.warn("Downloading Tinymist from $uri")
+      LOG.info("Downloading Tinymist from $uri")
 
       try {
         reportSequentialProgress(1) { reporter ->
@@ -74,7 +74,7 @@ class TinymistDownloader {
               val entrySize = if (currentEntry.size >= 0) currentEntry.size else -1L
               val sizeText = if (entrySize >= 0) formatFileSize(entrySize) else "unknown size"
 
-              LOG.warn("Extracting `${currentEntry.name}` to `${extractedFile.path}` ($sizeText)")
+              LOG.info("Extracting `${currentEntry.name}` to `${extractedFile.path}` ($sizeText)")
 
               reporter.itemStep("Downloading ${currentEntry.name} ($sizeText)...") {
                 try {
@@ -124,7 +124,7 @@ class TinymistDownloader {
               }
             }
 
-            LOG.warn("Tinymist downloaded and extracted successfully. Total size: ${formatFileSize(totalBytesDownloaded)}")
+            LOG.info("Tinymist downloaded and extracted successfully. Total size: ${formatFileSize(totalBytesDownloaded)}")
           }
         }
       } catch (e: Exception) {

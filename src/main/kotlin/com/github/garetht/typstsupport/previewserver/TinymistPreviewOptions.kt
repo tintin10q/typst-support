@@ -85,7 +85,7 @@ data class TinymistPreviewOptions(
     dataPlaneHostPort?.let { command.addAll(listOf("--data-plane-host", "127.0.0.1:$it")) }
     controlPlaneHostPort?.let { command.addAll(listOf("--control-plane-host", "127.0.0.1:$it")) }
 
-    LOG.warn("Tinymist preview command: $command")
+    LOG.info("Tinymist preview command: $command")
 
     return command
   }
