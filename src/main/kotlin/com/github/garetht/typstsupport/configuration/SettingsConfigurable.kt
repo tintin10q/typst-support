@@ -55,7 +55,7 @@ class SettingsConfigurable(
         buttonsGroup("Binary filepath") {
           row {
             automaticRadioButton = radioButton(
-              "Use automatically downloaded binary",
+              "Use automatically downloaded binary (v0.13.14)",
               BinarySource.USE_AUTOMATIC_DOWNLOAD
             )
           }
