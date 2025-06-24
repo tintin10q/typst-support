@@ -9,7 +9,9 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.BaseProjectDirectories.Companion.getBaseDirectories
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.lsp.api.Lsp4jClient
 import com.intellij.platform.lsp.api.LspServerDescriptor
+import com.intellij.platform.lsp.api.LspServerNotificationsHandler
 import com.intellij.platform.lsp.api.customization.LspFormattingSupport
 import java.nio.file.Path
 
@@ -27,6 +29,11 @@ class TinymistLanguageServerDescriptor(val languageServerPath: Path, project: Pr
 
   init {
     LOG.info("Language server project base dirs: ${project.getBaseDirectories().map { it.path }}")
+  }
+
+  override fun createLsp4jClient(handler: LspServerNotificationsHandler): Lsp4jClient {
+    LOG.warn("Creating Tinymist language server client for project: ${project.name}")
+    return TypstLspClient(project, handler)
   }
 
   val settings = SettingsState.getInstance()
