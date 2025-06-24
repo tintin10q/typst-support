@@ -32,7 +32,7 @@ class TinymistLanguageServerDescriptor(val languageServerPath: Path, project: Pr
   }
 
   override fun createLsp4jClient(handler: LspServerNotificationsHandler): Lsp4jClient {
-    LOG.warn("Creating Tinymist language server client for project: ${project.name}")
+    LOG.info("Creating ${TypstLspClient::class.simpleName} language server client for project: ${project.name}")
     return TypstLspClient(project, handler)
   }
 
