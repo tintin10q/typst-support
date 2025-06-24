@@ -12,7 +12,7 @@ import java.net.URI
 import java.nio.file.Path
 
 private const val TYPST_SUPPORT_ID = "com.github.garetht.typstsupport"
-private val version = Version(0, 13, 12)
+private val version = Version(0, 13, 14)
 
 class TinymistLocationResolver : LocationResolver {
   private val jnaNoClassPathKey = "jna.noclasspath"
