@@ -2,7 +2,10 @@ package com.github.garetht.typstsupport.languageserver.locations
 
 import java.util.regex.Pattern
 
-data class Version(val major: Int, val minor: Int, val patch: Int) {
+data class Version(val major: Int, val minor: Int, val patch: Int): Comparable<Version> {
+  override fun compareTo(other: Version): Int =
+    compareValuesBy(this, other, { it.major }, { it.minor }, { it.patch })
+
   fun toPathString(): String {
     return "v$major.$minor.$patch"
   }
