@@ -30,7 +30,7 @@ class LanguageServerDescriptorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = ["typ", "typc", "typm"])
+  @ValueSource(strings = ["typ"])
   fun shouldSupportTypstFileTypes(fileName: String) {
     // Arrange
 

@@ -22,19 +22,6 @@
                 fieldName="INSTANCE"
                 language="Typst"
                 extensions="typ"/>
-        <fileType
-                name="Typst Math"
-                implementationClass="com.github.garetht.typstsupport.language.filetype.TypstMathFileType"
-                fieldName="INSTANCE"
-                language="TypstMath"
-                extensions="typm"/>
-        <fileType
-                name="Typst Code"
-                implementationClass="com.github.garetht.typstsupport.language.filetype.TypstCodeFileType"
-                fieldName="INSTANCE"
-                language="TypstCode"
-                extensions="typc"/>
-
         <applicationConfigurable instance="com.github.garetht.typstsupport.configuration.SettingsConfigurable"
                                  displayName="Typst Support Settings"/>
 
