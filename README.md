@@ -40,6 +40,8 @@ Suggestions for symbols as you type.
 ### Bring your own binary
 Use a `tinymist` binary that exists on your system by pointing to its path locally.
 
+<!-- Plugin description end -->
+
 # Feature Demos
 
 <h3>Live Preview</h3>
@@ -110,8 +112,6 @@ Specify your local version of `tinymist` to be used with this plugin.
 <p align="center">
   <img alt="Typst Support Logo" src="./assets/configuration.png" width="800" />
 </p>
-
-<!-- Plugin description end -->
 
 ## Installation
 
