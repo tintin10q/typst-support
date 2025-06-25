@@ -19,25 +19,25 @@
 
 ## Features
 
-#### Live side-by-side preview
+### Live side-by-side preview
 Changes to documents are updated in the preview window in real time.
 
-#### Reformat files
+### Reformat files
 Reformat entire files with `typstfmt` or `typstyle`.
 
-#### Documentation on Hover
+### Documentation on Hover
 Hover over a symbol to view its documentation.
 
-#### Jump to Definition from Preview
+### Jump to Definition from Preview
 Click on a part of the preview document to jump to the definition of that element in your Typst sources.
 
-#### Find Usages
+### Find Usages
 List all the places a symbol is used in the project.
 
-#### Autocomplete
+### Autocomplete
 Suggestions for symbols as you type.
 
-#### Bring your own binary
+### Bring your own binary
 Use a `tinymist` binary that exists on your system by pointing to its path locally.
 
 <!-- Plugin description end -->
