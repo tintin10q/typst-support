@@ -24,8 +24,12 @@ class DefaultExecutionValidator(
       if (result.exitCode == 0) {
         val output = result.stdout.trim()
         val version = Version.Companion.parseVersion(output)
-        if (version != null) {
+        if (version == null) {
+          ExecutionValidation.Failed("No version information could be found.")
+        } else if (version >= VersionRequirement.version) {
           ExecutionValidation.Success(version)
+        } else if (version < VersionRequirement.version) {
+          ExecutionValidation.Failed("Tinymist version ${version.toPathString()} is below required version ${VersionRequirement.version.toPathString()}")
         } else {
           ExecutionValidation.Failed("Invalid binary output format")
         }

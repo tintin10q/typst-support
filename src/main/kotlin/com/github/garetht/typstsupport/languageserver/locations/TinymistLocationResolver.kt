@@ -4,6 +4,7 @@ import com.github.garetht.typstsupport.configuration.BinarySource
 import com.github.garetht.typstsupport.configuration.DefaultPathValidator
 import com.github.garetht.typstsupport.configuration.PathValidation
 import com.github.garetht.typstsupport.configuration.SettingsState
+import com.github.garetht.typstsupport.configuration.VersionRequirement
 import com.github.garetht.typstsupport.notifier.Notifier
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
@@ -12,8 +13,6 @@ import java.net.URI
 import java.nio.file.Path
 
 private const val TYPST_SUPPORT_ID = "com.github.garetht.typstsupport"
-private val version = Version(0, 13, 12)
-
 class TinymistLocationResolver : LocationResolver {
   private val jnaNoClassPathKey = "jna.noclasspath"
   private var jnaNoClassPath: String? = null
@@ -21,7 +20,7 @@ class TinymistLocationResolver : LocationResolver {
 
   private val binary =
     TinymistBinary(
-      version = version,
+      version = VersionRequirement.version,
       osName = OsName.fromString(System.getProperty("os.name")),
       osArchitecture = OsArchitecture.fromString(System.getProperty("os.arch")),
     )

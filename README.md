@@ -5,8 +5,10 @@
 ####
 
 <p align="center">
+
 [![Version](https://img.shields.io/jetbrains/plugin/v/27697-typst-support.svg)](https://plugins.jetbrains.com/plugin/27697-typst-support)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/27697-typst-support.svg)](https://plugins.jetbrains.com/plugin/27697-typst-support)
+
 </p>
 
 
@@ -17,21 +19,30 @@
 
 ## Features
 
-- Live Preview
-- Jump to Definition from Preview
-- Documentation on Hover
-- Find Usages
-- Autocomplete
-- Reformat files
-- Bring your own binary
-- ...and many more!
+### Live side-by-side preview
+Changes to documents are updated in the preview window in real time.
 
-<!-- Plugin description end -->
+### Reformat files
+Reformat entire files with `typstfmt` or `typstyle`.
+
+### Documentation on Hover
+Hover over a symbol to view its documentation.
+
+### Jump to Definition from Preview
+Click on a part of the preview document to jump to the definition of that element in your Typst sources.
+
+### Find Usages
+List all the places a symbol is used in the project.
+
+### Autocomplete
+Suggestions for symbols as you type.
+
+### Bring your own binary
+Use a `tinymist` binary that exists on your system by pointing to its path locally.
 
 # Feature Demos
 
 <h3>Live Preview</h3>
-Changes to documents are updated in the preview window in real time.
 
 ####
 
@@ -41,8 +52,17 @@ Changes to documents are updated in the preview window in real time.
 
 ####
 
+<h3>Reformat files</h3>
+
+####
+
+<p align="center">
+  <img alt="Reformat File" src="./assets/reformat-file.gif" width="800" />
+</p>
+
+####
+
 <h3>Jump to Definition from Preview</h3>
-Click on a part of the preview document to jump to the definition of that element in the file.
 
 ####
 
@@ -53,7 +73,6 @@ Click on a part of the preview document to jump to the definition of that elemen
 ####
 
 <h3>Documentation on Hover</h3>
-Hover over a symbol to view its documentation.
 
 ####
 
@@ -64,7 +83,6 @@ Hover over a symbol to view its documentation.
 ####
 
 <h3>Find Usages</h3>
-List all the places a symbol is used in the project.
 
 ####
 
@@ -75,23 +93,11 @@ List all the places a symbol is used in the project.
 ####
 
 <h3>Autocomplete</h3>
-Suggestions for symbols as you type.
 
 ####
 
 <p align="center">
   <img alt="Reformat File" src="./assets/autocomplete.gif" width="800" />
-</p>
-
-####
-
-<h3>Reformat files</h3>
-Reformat entire files with `typstfmt` or `typstyle`.
-
-####
-
-<p align="center">
-  <img alt="Reformat File" src="./assets/reformat-file.gif" width="800" />
 </p>
 
 ####
@@ -105,6 +111,8 @@ Specify your local version of `tinymist` to be used with this plugin.
   <img alt="Typst Support Logo" src="./assets/configuration.png" width="800" />
 </p>
 
+<!-- Plugin description end -->
+
 ## Installation
 
 - Using IDE built-in plugin system:
@@ -115,7 +123,11 @@ Specify your local version of `tinymist` to be used with this plugin.
 
 ## Compatible IDEs
 
-Works in 2025.1+ IntelliJ IDEs.
+Works in 2025.1+ IntelliJ IDEs. May not work in Rider.
+
+## Compatible Tinymist
+
+Currently, only `tinymist` versions `0.13.14` and above are supported. 
 
 ## Feature Support
 

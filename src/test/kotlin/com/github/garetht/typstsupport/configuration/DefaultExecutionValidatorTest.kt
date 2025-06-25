@@ -29,8 +29,8 @@ class DefaultExecutionValidatorTest {
   fun `should return success with valid version output`() {
     // Given
     val binaryPath = "/path/to/binary"
-    val versionOutput = "tinymist 1.2.3"
-    val expectedVersion = Version(1, 2, 3)
+    val versionOutput = "tinymist 401.293.193"
+    val expectedVersion = Version(401, 293, 193)
 
     every { pathValidator.validateBinaryFile(binaryPath) } returns PathValidation.Success
     every { processExecutor.executeProcess(any()) } returns ProcessOutput(versionOutput, "", 0, false, false)
@@ -90,7 +90,7 @@ class DefaultExecutionValidatorTest {
 
     // Then
     assertInstanceOf(ExecutionValidation.Failed::class.java, result)
-    assertEquals("Invalid binary output format", (result as ExecutionValidation.Failed).message)
+    assertEquals("No version information could be found.", (result as ExecutionValidation.Failed).message)
   }
 
   @ParameterizedTest
@@ -140,7 +140,7 @@ class DefaultExecutionValidatorTest {
   fun `should verify command line is created with correct parameters`() {
     // Given
     val binaryPath = "/path/to/binary"
-    val versionOutput = "tinymist 1.2.3"
+    val versionOutput = "tinymist 401.293.193"
     var capturedCommandLine: GeneralCommandLine? = null
 
     every { pathValidator.validateBinaryFile(binaryPath) } returns PathValidation.Success
@@ -155,5 +155,22 @@ class DefaultExecutionValidatorTest {
     // Then
     assertEquals(binaryPath, capturedCommandLine?.exePath)
     assertEquals(listOf("-V"), capturedCommandLine?.parametersList?.list)
+  }
+
+  @Test
+  fun `should reject a binary version that is too low`() {
+    // Given
+    val binaryPath = "/path/to/binary"
+    val versionOutput = "tinymist 0.11.12"
+    val expectedVersion = Version(1, 2, 3)
+
+    every { pathValidator.validateBinaryFile(binaryPath) } returns PathValidation.Success
+    every { processExecutor.executeProcess(any()) } returns ProcessOutput(versionOutput, "", 0, false, false)
+
+    // When
+    val result = validator.validateBinaryExecution(binaryPath)
+
+    // Then
+    assertInstanceOf(ExecutionValidation.Failed::class.java, result)
   }
 } 
