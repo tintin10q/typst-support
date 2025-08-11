@@ -1,48 +1,32 @@
 package com.github.garetht.typstsupport.structureview
 
+import com.github.garetht.typstsupport.languageserver.TypstLanguageServerManager
+import com.github.garetht.typstsupport.languageserver.TypstLspServerSupportProvider
+import com.github.garetht.typstsupport.languageserver.models.Outline
+import com.github.garetht.typstsupport.languageserver.models.OutlineItem
+import com.google.gson.Gson
+import com.intellij.platform.lsp.api.LspServerManager
 import com.intellij.psi.PsiFile
-
-data class HeadingNode(
-    val level: Int,
-    val text: String,
-    val offset: Int,
-    val children: MutableList<HeadingNode> = mutableListOf()
-)
+import kotlinx.coroutines.runBlocking
+import org.eclipse.lsp4j.ExecuteCommandParams
 
 internal object TypstStructureParser {
-    fun parse(file: PsiFile): List<HeadingNode> {
-        val text = file.text
-        val headings = mutableListOf<Triple<Int, String, Int>>() // level, title, offset
+    fun parse(file: PsiFile): List<OutlineItem> = runBlocking {
+        val server = TypstLanguageServerManager.waitForServer(
+            LspServerManager.getInstance(file.project),
+            TypstLspServerSupportProvider::class.java
+        ) ?: return@runBlocking emptyList<OutlineItem>()
 
-        val eqRegex = Regex("""(?m)^(\=+)\s+(.*)$""")
-        for (match in eqRegex.findAll(text)) {
-            val level = match.groupValues[1].length
-            val title = match.groupValues[2].trim()
-            headings += Triple(level, title, match.range.first)
+        val result = server.sendRequestSync {
+            it.workspaceService.executeCommand(
+                ExecuteCommandParams(
+                    "tinymist.documentOutline",
+                    listOf(file.virtualFile.path)
+                )
+            )
         }
-
-        val macroRegex = Regex("""(?m)^#heading(?:\(([^)]*)\))?\[(.*?)]""")
-        for (match in macroRegex.findAll(text)) {
-            val options = match.groupValues[1]
-            val title = match.groupValues[2].trim()
-            val levelMatch = Regex("""level\s*:\s*(\d+)""").find(options)
-            val level = levelMatch?.groupValues?.get(1)?.toInt() ?: 1
-            headings += Triple(level, title, match.range.first)
-        }
-
-        headings.sortBy { it.third }
-
-        val root = HeadingNode(0, "", 0)
-        val stack = mutableListOf(root)
-        for ((level, title, offset) in headings) {
-            while (stack.last().level >= level) {
-                stack.removeAt(stack.size - 1)
-            }
-            val node = HeadingNode(level, title, offset)
-            stack.last().children += node
-            stack += node
-        }
-        return root.children
+        val gson = Gson()
+        val outline = gson.fromJson(gson.toJson(result), Outline::class.java)
+        outline.items
     }
 }
-
