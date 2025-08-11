@@ -22,6 +22,7 @@
                 fieldName="INSTANCE"
                 language="Typst"
                 extensions="typ"/>
+        <psiStructureViewFactory language="Typst" implementation="com.github.garetht.typstsupport.structureview.TypstStructureViewFactory"/>
         <applicationConfigurable instance="com.github.garetht.typstsupport.configuration.SettingsConfigurable"
                                  displayName="Typst Support Settings"/>
 
