@@ -52,7 +52,7 @@ class SettingsConfigurable(
   override fun createPanel(): DialogPanel {
     return panel {
       group("Tinymist") {
-        buttonsGroup("Binary filepath") {
+        buttonsGroup("Binary file path") {
           row {
             automaticRadioButton = radioButton(
               "Use automatically downloaded binary (${VersionRequirement.version.toPathString()})",
